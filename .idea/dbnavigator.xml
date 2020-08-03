@@ -2,7 +2,7 @@
 <project version="4">
   <component name="DBNavigator.Project.DataEditorManager">
     <record-view-column-sorting-type value="BY_INDEX" />
-    <value-preview-text-wrapping value="true" />
+    <value-preview-text-wrapping value="false" />
     <value-preview-pinned value="false" />
   </component>
   <component name="DBNavigator.Project.DataExportManager">
@@ -25,16 +25,16 @@
     <show-object-properties value="true" />
     <loaded-nodes>
       <connection connection-id="65ff6ad5-3c4f-46c7-a177-c4395983d408">
-        <schema name="main" object-types="view, dataset trigger, constraint, index, table, column" />
+        <schema name="main" object-types="column, table, view" />
       </connection>
     </loaded-nodes>
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="65ff6ad5-3c4f-46c7-a177-c4395983d408">
-      <console name="Connection" type="STANDARD" schema="main" session="Main"><![CDATA[use login_save
+      <console name="Connection" type="STANDARD" schema="main" session="Main">use login_save
 select * from settings
 update settings set autologin = 1
-select * from settings]]></console>
+select * from settings</console>
     </connection>
     <connection id="e771eda8-44fb-42a8-b07f-ba8b903a277f">
       <console name="MariaDB" type="STANDARD" schema="" session="Main" />
