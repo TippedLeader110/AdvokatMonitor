@@ -2,4 +2,7 @@
     <string name="app_name">Advokat Monitor</string>
     <string name="title_login">Login Admin Advokat</string>
     <string name="todo">TODO</string>
+    <string name="title_activity_kasus">Kasus</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
 </resources>

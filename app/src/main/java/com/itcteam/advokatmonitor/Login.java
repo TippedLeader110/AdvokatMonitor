@@ -5,12 +5,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -19,6 +21,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +44,7 @@ public class Login extends AppCompatActivity {
         do_login = (Button) findViewById(R.id.but_login);
         v_username = (EditText) findViewById(R.id.val_username);
         v_password = (EditText) findViewById(R.id.val_password);
+
 //        loadDB();
 
 
@@ -59,7 +66,14 @@ public class Login extends AppCompatActivity {
                                 if(pd.isShowing()){
                                     pd.dismiss();
                                     if (!pd.isShowing()){
-                                        showDialog(response);
+                                        if (DBSet.autoLogin(response)){
+                                            showDialog("Berhasil");
+                                            Intent inte = new Intent(Login.this, Kasus.class);
+                                            startActivity(inte);
+                                        }
+                                        else{
+                                            showDialog("Gagal");
+                                        }
                                     }
                                 }
                             }
@@ -70,7 +84,7 @@ public class Login extends AppCompatActivity {
                                 if(pd.isShowing()){
                                     pd.dismiss();
                                     if (!pd.isShowing()){
-                                        showDialog("Kesalahan");
+                                        showDialog("Username atau Password Salah");
                                     }
                                 }
                             }
