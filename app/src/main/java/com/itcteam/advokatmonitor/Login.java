@@ -68,6 +68,9 @@ public class Login extends AppCompatActivity {
                                     if (!pd.isShowing()){
                                         if (DBSet.autoLogin(response)){
                                             showDialog("Berhasil");
+                                            Intent intent = new Intent(Login.this, Kasus.class);
+                                            intent.putExtra("LEVEL_ACCOUNT", Integer.toString(DBSet.getLevel()));
+                                            startActivity(intent);
                                         }
                                         else{
                                             showDialog("Terjadi kesalahan saat menghubungkan ke database !!");

@@ -20,6 +20,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_NAME = "name";
     private static final String KEY_LEVEL = "level";
     private static final String KEY_UID = "UID";
+    String username;
+    String password;
+    Integer level;
+    String email;
+    Integer uid;
+    String name;
     SQLiteDatabase db;
 
     public DatabaseHandler(Context context){
@@ -47,12 +53,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         JSONObject reader;
         try {
             reader = new JSONObject(response);
-            String username = reader.getString("username");
-            String password = reader.getString("password");
-            Integer level = reader.getInt("level");
-            String email = reader.getString("email");
-            Integer uid = reader.getInt("uid");
-            String name = reader.getString("name");
+            username = reader.getString("username");
+            password = reader.getString("password");
+            level = reader.getInt("level");
+            email = reader.getString("email");
+            uid = reader.getInt("uid");
+            name = reader.getString("name");
             ContentValues contentValues = new ContentValues();
             contentValues.put(KEY_USERNAME, username);
             contentValues.put(KEY_PASSWORD, password);
@@ -71,5 +77,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public Integer getLevel() {
+        return level;
     }
 }

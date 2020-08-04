@@ -3,6 +3,10 @@
     <string name="title_login">Login Admin Advokat</string>
     <string name="todo">TODO</string>
     <string name="title_activity_kasus">Kasus</string>
-    <string name="tab_text_1">Tab 1</string>
-    <string name="tab_text_2">Tab 2</string>
+    <string name="tab_text_1">Baru</string>
+    <string name="tab_text_2">Berjalan</string>
+    <string name="tab_text_3">Selesai</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tab_text_4">Ditutup/Ditolak</string>
 </resources>
