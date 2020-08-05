@@ -22,10 +22,10 @@
   <component name="DBNavigator.Project.DatabaseBrowserManager">
     <autoscroll-to-editor value="false" />
     <autoscroll-from-editor value="true" />
-    <show-object-properties value="true" />
+    <show-object-properties value="false" />
     <loaded-nodes>
       <connection connection-id="65ff6ad5-3c4f-46c7-a177-c4395983d408">
-        <schema name="main" object-types="column, table, view" />
+        <schema name="main" object-types="column, view, table" />
       </connection>
     </loaded-nodes>
   </component>
@@ -88,7 +88,7 @@ select * from settings</console>
           <port value="1234" />
           <database value="database" />
           <files>
-            <file path="E:\Users\Bayhaqi\Documents\AndroidStudio\DeviceExplorer\sony-so_01j-CB512CMNDD\data\data\com.itcteam.advokatmonitor\databases\login_save" schema="main" />
+            <file path="E:\Users\Bayhaqi\Documents\AndroidStudio\DeviceExplorer\sony-so_01j-CB512CMNDD\data\data\com.itcteam.advokatmonitor\databases\login_save2" schema="main" />
           </files>
           <type value="NONE" />
           <user value="" />
