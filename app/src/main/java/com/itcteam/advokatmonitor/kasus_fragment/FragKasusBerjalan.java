@@ -1,13 +1,19 @@
-package com.itcteam.advokatmonitor.ui.main;
+package com.itcteam.advokatmonitor.kasus_fragment;
 
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -16,32 +22,35 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.itcteam.advokatmonitor.DatabaseHandler;
-import com.itcteam.advokatmonitor.Login;
+import com.itcteam.advokatmonitor.dbclass.DatabaseHandlerAppSave;
 import com.itcteam.advokatmonitor.R;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link FragKasus#newInstance} factory method to
+ * Use the {@link FragKasusBerjalan#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragKasus extends Fragment {
+public class FragKasusBerjalan extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "tab";
-    private static final String ARG_PARAM2 = "level";
+    private static final String ARG_PARAM1 = "level";
+    private static final String status = "berjalan";
 //
     // TODO: Rename and change types of parameters
+
     private Integer mParam1;
-    private Integer mParam2;
-    private String Return, status;
-    TextView textTest;
-    DatabaseHandler DBset;
-    public FragKasus() {
+    private String Return;
+    ListView listView;
+    private AdapterView.OnItemClickListener itemKlik;
+    List listJudul;
+    DatabaseHandlerAppSave DBset;
+    public FragKasusBerjalan() {
         // Required empty public constructor
     }
 
@@ -50,15 +59,13 @@ public class FragKasus extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment FragKasus.
      */
     // TODO: Rename and change types and number of parameters
-    public static FragKasus newInstance(Integer param1, Integer param2) {
-        FragKasus fragment = new FragKasus();
+    public static FragKasusBerjalan newInstance(Integer param1) {
+        FragKasusBerjalan fragment = new FragKasusBerjalan();
         Bundle args = new Bundle();
         args.putInt(ARG_PARAM1, param1);
-        args.putInt(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -66,10 +73,9 @@ public class FragKasus extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (getArguments() != null) {
             mParam1 = getArguments().getInt(ARG_PARAM1);
-            mParam2 = getArguments().getInt(ARG_PARAM2);
-
         }
     }
 
@@ -78,21 +84,25 @@ public class FragKasus extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_frag_kasus, container, false);
-        TextView textView = root.findViewById(R.id.testText);
-        textView.setText(getKasusAPI());
+        listView = root.findViewById(R.id.listViewBerjalan);
+        DatabaseHandlerAppSave databaseHandlerAppSave = new DatabaseHandlerAppSave(getContext());
+        ArrayList<HashMap<String, String>> daftarKasus = databaseHandlerAppSave.getKasus(mParam1);
+        ListAdapter adapter = new SimpleAdapter(root.getContext(), daftarKasus, R.layout.listview_fragmentkasus,new String[]{"id","judul","pengirim","ktp"}, new int[]{R.id.id_listview,R.id.judul_listview, R.id.pengirim_listview, R.id.ktp});
+        listView.setAdapter(adapter);
+        listView.setClickable(true);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                TextView id = view.findViewById(R.id.id_listview);
+                Toast.makeText(getContext(), "ID : "+ id.getText(), Toast.LENGTH_SHORT).show();
+            }
+        });
         return root;
     }
 
+
+
     public String getKasusAPI(){
-        if (mParam1==1){
-            status = "baru";
-        }
-        else if ((mParam1==2)){
-            status = "berjalan";
-        }
-        else{
-            status = "tutup";
-        }
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 
         String url = "http://192.168.43.90/advokat/api/key/kasus";
@@ -109,14 +119,14 @@ public class FragKasus extends Fragment {
                         Return = "ERROR";
                     }
                 })
-                {
-                    @Override
-                    protected Map<String, String> getParams() throws AuthFailureError {
-                        Map<String, String> params = new HashMap<String, String>();
-                        params.put("status",status);
-                        return params;
-                    }
-                };
+        {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("status",status);
+                return params;
+            }
+        };
         queue.add(stringRequest);
         return Return;
     }

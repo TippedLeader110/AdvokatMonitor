@@ -7,12 +7,9 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -21,8 +18,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.itcteam.advokatmonitor.dbclass.DatabaseHandlerAppSave;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Login extends AppCompatActivity {
-    DatabaseHandler DBSet;
+    DatabaseHandlerAppSave DBSet;
     Button do_login;
     EditText v_username, v_password;
     ProgressDialog pd;
@@ -43,7 +40,7 @@ public class Login extends AppCompatActivity {
         failedLogin = false;
         setContentView(R.layout.activity_login);
         pd = new ProgressDialog(Login.this);
-        DBSet = new DatabaseHandler(this);
+        DBSet = new DatabaseHandlerAppSave(this);
         queue = Volley.newRequestQueue(Login.this);
         do_login = (Button) findViewById(R.id.but_login);
         v_username = (EditText) findViewById(R.id.val_username);

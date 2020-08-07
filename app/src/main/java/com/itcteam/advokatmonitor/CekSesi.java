@@ -2,8 +2,6 @@ package com.itcteam.advokatmonitor;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.database.Cursor;
 import android.util.Log;
 
 import androidx.appcompat.app.AlertDialog;
@@ -15,6 +13,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.itcteam.advokatmonitor.dbclass.DatabaseHandlerAppSave;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,7 +23,7 @@ import java.util.Map;
 
 public class CekSesi {
     public String token;
-    DatabaseHandler DBset;
+    DatabaseHandlerAppSave DBset;
     public static final String URL_TOKEN = "http://192.168.43.90/advokat/api/key/loginToken";
     public boolean status;
     private RequestQueue queue;
@@ -35,7 +34,7 @@ public class CekSesi {
     }
 
     public boolean doJob(){
-        DBset = new DatabaseHandler(kelas);
+        DBset = new DatabaseHandlerAppSave(kelas);
         queue = Volley.newRequestQueue(kelas);
         this.token = DBset.getToken();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, URL_TOKEN,
