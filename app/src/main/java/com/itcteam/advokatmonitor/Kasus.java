@@ -5,6 +5,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -21,9 +27,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.itcteam.advokatmonitor.dbclass.DatabaseHandlerAppSave;
 import com.itcteam.advokatmonitor.ui.main.SectionsPagerAdapter;
 
-public class Kasus extends AppCompatActivity {
+public class Kasus extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
     ProgressDialog pd;
     private String sResponse;
+    DatabaseHandlerAppSave databaseHandlerAppSave;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +43,7 @@ public class Kasus extends AppCompatActivity {
             startActivity(intent);
             finish();
         }else{
-            final DatabaseHandlerAppSave databaseHandlerAppSave = new DatabaseHandlerAppSave(Kasus.this);
+            databaseHandlerAppSave = new DatabaseHandlerAppSave(Kasus.this);
             pd.setCancelable(false);
             pd.setTitle("Mohon Tunggu !!!");
             pd.setMessage("Sinkronasi dengan database");
@@ -78,6 +85,29 @@ public class Kasus extends AppCompatActivity {
                         }
                     });
             queue.add(stringRequest);
+        }
+    }
+
+    public void dothePopup(View view){
+        PopupMenu pop = new PopupMenu(this, view);
+        pop.setOnMenuItemClickListener(this);
+        pop.inflate(R.menu.menu_logout);
+        pop.show();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem menuItem) {
+        switch (menuItem.getItemId()){
+            case R.id.item1:
+                Toast.makeText(this, "Logout !!!", Toast.LENGTH_SHORT).show();
+                databaseHandlerAppSave.clearDB(2);
+                Intent intent = new Intent(this, Login.class);
+                startActivity(intent);
+                finish();
+                return true;
+            default:
+                return false;
+
         }
     }
 

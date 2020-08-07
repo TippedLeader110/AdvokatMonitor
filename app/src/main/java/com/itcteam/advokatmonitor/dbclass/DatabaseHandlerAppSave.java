@@ -220,9 +220,16 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
         }
     }
 
-    public void clearDB(){
+    public void clearDB(int dbtable){
         db = this.getWritableDatabase();
-        db.execSQL("DELETE FROM " + TABLE_KASUS);
+        String table = null;
+        if (dbtable==1){
+            table = TABLE_KASUS;
+        }else{
+            table = TABLE_SETTINGS;
+        }
+        db.execSQL("DELETE FROM " + table);
+
     }
 
     public boolean syncKasus(String response){
@@ -231,7 +238,7 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
         try {
             JSONObject Jselect = new JSONObject(response);
             if (checkUpdateTime(Jselect.getString("update_time"))){
-                clearDB();
+                clearDB(1);
                 JSONArray jsonArray = new JSONArray(Jselect.getString("kasus"));
                 for (int i = 0; i < jsonArray.length(); i++){
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
