@@ -1,5 +1,6 @@
 package com.itcteam.advokatmonitor.kasus_fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -22,6 +23,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.snackbar.Snackbar;
+import com.itcteam.advokatmonitor.KasusDetail;
 import com.itcteam.advokatmonitor.dbclass.DatabaseHandlerAppSave;
 import com.itcteam.advokatmonitor.R;
 
@@ -94,13 +97,15 @@ public class FragKasusBerjalan extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 TextView id = view.findViewById(R.id.id_listview);
-                Toast.makeText(getContext(), "ID : "+ id.getText(), Toast.LENGTH_SHORT).show();
+                String idval = (String) id.getText();
+                Intent intent = new Intent(getContext(), KasusDetail.class);
+                intent.putExtra("id_kasus", idval);
+                intent.putExtra("posisi",  Integer.toString(mParam1));
+                startActivity(intent);
             }
         });
         return root;
     }
-
-
 
     public String getKasusAPI(){
         RequestQueue queue = Volley.newRequestQueue(getActivity());

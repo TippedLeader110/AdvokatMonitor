@@ -191,6 +191,37 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
         }
     }
 
+    public HashMap<String, String> getDetailKasus(Integer id, Integer status) {
+        db = this.getReadableDatabase();
+        String statusString = "Kasus Baru";
+        HashMap<String,String> dataKasus = new HashMap<>();
+        Cursor cursor = db.rawQuery( "select * from "+TABLE_KASUS+ " where id_masalah = " + id, null );
+        cursor.moveToFirst();
+        if (cursor.moveToLast()) {
+            if (status == 1){
+                statusString = "Kasus Baru";
+            }
+            else if (status == 2){
+                statusString = "Kasus Berjalan";
+            }
+            else if (status == 3){
+                statusString = "Kasus Selesai";
+            }
+            else if (status == 4){
+                statusString = "Kasus Ditutup/Ditolak";
+            }
+            dataKasus.put("status", statusString);
+            dataKasus.put("id",Integer.toString(cursor.getInt(cursor.getColumnIndex("id_masalah"))));
+            dataKasus.put("judul",cursor.getString(cursor.getColumnIndex("deskripsi")));
+            dataKasus.put("pengirim",cursor.getString(cursor.getColumnIndex("nama")));
+            dataKasus.put("ktp",cursor.getString(cursor.getColumnIndex("ktp")));
+            return dataKasus;
+        }else {
+            Log.e("error not found", "data can't be found or database empty");
+            return dataKasus;
+        }
+    }
+
     private boolean updateSession(String response) {
         db = this.getWritableDatabase();
         JSONObject reader;
