@@ -1,12 +1,9 @@
-package com.itcteam.advokatmonitor;
+package com.itcteam.advokatmonitor.ui.main;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
@@ -24,8 +21,10 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.itcteam.advokatmonitor.R;
 import com.itcteam.advokatmonitor.dbclass.DatabaseHandlerAppSave;
-import com.itcteam.advokatmonitor.ui.main.SectionsPagerAdapter;
+import com.itcteam.advokatmonitor.ui.main.kasus_fragment.SectionsPagerAdapter;
+import com.itcteam.advokatmonitor.simpletask.CekSesi;
 
 public class Kasus extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
     ProgressDialog pd;

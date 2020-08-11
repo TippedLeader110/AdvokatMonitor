@@ -1,4 +1,4 @@
-package com.itcteam.advokatmonitor.kasus_fragment;
+package com.itcteam.advokatmonitor.ui.main.kasus_fragment;
 
 import android.os.Bundle;
 
