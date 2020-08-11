@@ -1,4 +1,4 @@
-package com.itcteam.advokatmonitor;
+package com.itcteam.advokatmonitor.simpletask;
 
 import android.content.Context;
 import android.content.DialogInterface;
