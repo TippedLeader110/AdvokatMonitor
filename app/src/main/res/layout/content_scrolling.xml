@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".ui.main.KasusDetail"
+    tools:context=".kasusDetail.KasusDetailAdmin"
     tools:showIn="@layout/activity_kasus_detail">
 
 
@@ -109,7 +109,7 @@
                         android:text=" :" />
 
                     <TextView
-                        android:id="@+id/pengirim_detail"
+                        android:id=" @+id/pengirim_detail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="7dp"
@@ -137,6 +137,33 @@
 
                     <TextView
                         android:id="@+id/ktp_detail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="7dp"
+                        android:layout_marginBottom="5dp"
+                        android:text="KTP" />
+
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" >
+
+                    <TextView
+                        android:id="@+id/textViewP"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:text="Pengacara" />
+
+                    <TextView
+                        android:id="@+id/textViewP2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" :" />
+
+                    <TextView
+                        android:id="@+id/nama_pengacara_detail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="7dp"

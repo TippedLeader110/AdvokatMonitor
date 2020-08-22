@@ -2,6 +2,7 @@ package com.itcteam.advokatmonitor.dbclass;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -19,6 +20,7 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "advokatdb";
     private static final String TABLE_SETTINGS = "login";
     private static final String TABLE_KASUS = "kasus";
+    private static final String TABLE_PENGACARA = "pengacara";
     private static final String KEY_AUTO = "autologin";
     private static final String KEY_USERNAME = "username";
     private static final String KEY_PASSWORD = "password";
@@ -45,11 +47,12 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_CONTACTS_TABLE = " CREATE TABLE " + TABLE_SETTINGS + " ( "
+        String CREATE_APPSAVE = " CREATE TABLE " + TABLE_SETTINGS + " ( "
                 + KEY_AUTO + " INTEGER , " + KEY_NAME + " TEXT, "  + KEY_EMAIL + " TEXT, " + KEY_UID + " INTEGER , "
                 + KEY_LEVEL + " INTEGER , " + KEY_TOKEN + " TEXT , " + KEY_SYNC + " TEXT ) ";
-        Log.w("BENTUK QUERY",CREATE_CONTACTS_TABLE);
-        db.execSQL(CREATE_CONTACTS_TABLE);
+//        Log.w("BENTUK QUERY",CREATE_CONTACTS_TABLE);
+        db.execSQL(CREATE_APPSAVE);
+
         String CREATE_KASUS = " CREATE TABLE " + TABLE_KASUS + " (" +
                 "  id_masalah int(11) NOT NULL," +
                 "  id_p int(11) NULL," +
@@ -69,6 +72,16 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
                 ") ";
         Log.w("BENTUK QUERY",CREATE_KASUS);
         db.execSQL(CREATE_KASUS);
+
+        String CREATE_PENGACARA = " CREATE TABLE " + TABLE_PENGACARA + " ( " +
+                "  id int(11) NOT NULL," +
+                "  nama text NOT NULL," +
+                "  nohp text NOT NULL," +
+                "  email text NOT NULL," +
+                "  foto text NOT NULL" +
+                ") ";
+        Log.w("BENTUK QUERY",CREATE_PENGACARA);
+        db.execSQL(CREATE_PENGACARA);
     }
 
     @Override
@@ -135,7 +148,7 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
                 return false;
             }
         }else {
-            Log.e("error not found", "data can't be found or database empty");
+            Log.e("error not found", "data can't be found or database empty (login)");
             return false;
         }
     }
@@ -147,7 +160,7 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
         if (res.moveToLast()) {
             return res.getString(5);
         }else {
-            Log.e("error not found", "data can't be found or database empty");
+            Log.e("error not found", "data can't be found or database empty (token)");
             return null;
         }
     }
@@ -186,9 +199,23 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
         if (res.moveToLast()) {
             return res.getInt(4);
         }else {
-            Log.e("error not found", "data can't be found or database empty");
+            Log.e("error not found", "data can't be found or database empty (level)");
             return null;
         }
+    }
+
+    public String namaPengacara(String id) {
+        db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery( "select * from "+TABLE_PENGACARA+ " where id = " + id, null );
+        String pengacara = "";
+//        cursor.moveToFirst();
+        if (cursor.moveToFirst()) {
+            pengacara = cursor.getString(cursor.getColumnIndex("nama"));
+        }else {
+            Log.e("error not found", "data can't be found or database empty (pengacara)");
+            pengacara = "Belum Dipilih";
+        }
+        return pengacara;
     }
 
     public HashMap<String, String> getDetailKasus(Integer id, Integer status) {
@@ -215,9 +242,10 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
             dataKasus.put("judul",cursor.getString(cursor.getColumnIndex("deskripsi")));
             dataKasus.put("pengirim",cursor.getString(cursor.getColumnIndex("nama")));
             dataKasus.put("ktp",cursor.getString(cursor.getColumnIndex("ktp")));
+            dataKasus.put("id_p",cursor.getString(cursor.getColumnIndex("id_p")));
             return dataKasus;
         }else {
-            Log.e("error not found", "data can't be found or database empty");
+            Log.e("error not found", "data can't be found or database empty (kasus)");
             return dataKasus;
         }
     }
@@ -256,11 +284,12 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
         String table = null;
         if (dbtable==1){
             table = TABLE_KASUS;
+        }else if(dbtable==2){
+            table = TABLE_PENGACARA;
         }else{
             table = TABLE_SETTINGS;
         }
         db.execSQL("DELETE FROM " + table);
-
     }
 
     public boolean syncKasus(String response){
@@ -274,7 +303,6 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
                 for (int i = 0; i < jsonArray.length(); i++){
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
                     ContentValues contentValues = new ContentValues();
-                    contentValues.put("id_masalah", jsonObject.getInt("id_masalah"));
                     contentValues.put("id_masalah", jsonObject.getInt("id_masalah"));
                     contentValues.put("id_p", jsonObject.getString("id_p"));
                     contentValues.put("nama", jsonObject.getString("nama"));
@@ -292,6 +320,24 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
                     contentValues.put("update_time", jsonObject.getString("update_time"));
                     long ret = db.insert(TABLE_KASUS, null, contentValues);
                     notif = true;
+                    if (ret!=-1){
+                        done = true;
+                    }else{
+                        done = false;
+                    }
+                }
+                clearDB(2);
+                JSONArray jsonArrayP = new JSONArray(Jselect.getString("pengacara"));
+                for (int iP = 0; iP < jsonArrayP.length(); iP++){
+                    JSONObject jsonObjectP = jsonArrayP.getJSONObject(iP);
+//                            Log.e("SSS", String.valueOf(jsonObjectP));
+                    ContentValues contentValuesP = new ContentValues();
+                    contentValuesP.put("id", jsonObjectP.getInt("id"));
+                    contentValuesP.put("nama", jsonObjectP.getString("nama"));
+                    contentValuesP.put("email", jsonObjectP.getString("email"));
+                    contentValuesP.put("nohp", jsonObjectP.getString("nohp"));
+                    contentValuesP.put("foto", jsonObjectP.getString("foto"));
+                    Long ret = db.insert(TABLE_PENGACARA, null, contentValuesP);
                     if (ret!=-1){
                         done = true;
                     }else{
@@ -333,5 +379,39 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
         }
         Log.e("le", String.valueOf(keputusan));
         return keputusan;
+    }
+
+    public boolean GantiStatus(Integer idKasus) {
+        db = this.getReadableDatabase();
+        Integer status = 0;
+        Cursor res = db.rawQuery( "select * from "+TABLE_KASUS+ " where id_masalah = " + idKasus, null );
+        res.moveToFirst();
+        if (res.moveToLast()) {
+            status = res.getInt(res.getColumnIndex("status"));
+            Log.e("FStatus",Integer.toString(status));
+        }else {
+            Log.e("error not found", "data can't be found or database empty");
+        }
+        ContentValues contentValues = new ContentValues();
+        if (status==1){
+            contentValues.put("status", 0);
+        }else if (status==2){
+            Log.e("FStatus",Integer.toString(status));
+            contentValues.put("status", 4);
+        }else if(status==3){
+            contentValues.put("status", 2);
+        }else if (status==4){
+            contentValues.put("status", 2);
+        }
+//        Log.e("AStatus",String.valueOf(contentValues));
+        db = this.getWritableDatabase();
+        String contentWhere = "id_masalah="+idKasus;
+        int ret = db.update(TABLE_KASUS, contentValues, contentWhere, null);
+        if (ret!=0){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 }

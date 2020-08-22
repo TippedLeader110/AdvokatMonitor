@@ -33,6 +33,8 @@ public class AdapterPengacara extends SimpleAdapter {
             vi = layoutInflater.inflate(R.layout.listview_daftarpengacara, null);
         HashMap<String, Object> data = (HashMap<String, Object>) getItem(position);
         Picasso.get().load((String) data.get("foto")).into((ImageView) vi.findViewById(R.id.fotopengacara_listview));
+        TextView id = vi.findViewById(R.id.id_pengacara);
+        id.setText((String) data.get("id"));
         TextView nama = vi.findViewById(R.id.namapengacara_listview);
         nama.setText((String) data.get("nama"));
         TextView email = vi.findViewById(R.id.emailpengacara_listview);

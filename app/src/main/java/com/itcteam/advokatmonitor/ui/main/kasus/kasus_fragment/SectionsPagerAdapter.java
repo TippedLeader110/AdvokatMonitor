@@ -1,4 +1,4 @@
-package com.itcteam.advokatmonitor.ui.main.kasus_fragment;
+package com.itcteam.advokatmonitor.ui.main.kasus.kasus_fragment;
 
 import android.content.Context;
 import android.util.Log;

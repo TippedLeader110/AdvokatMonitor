@@ -15,11 +15,11 @@
             android:name=".ui.main.pengacara.KasusListPengacara"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
-            android:name=".ui.main.KasusDetail"
+            android:name=".kasusDetail.KasusDetailAdmin"
             android:label="@string/title_activity_kasus_detail"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ui.main.Kasus"
+            android:name=".ui.main.kasus.Kasus"
             android:label="@string/title_activity_kasus"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity

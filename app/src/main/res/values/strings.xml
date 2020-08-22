@@ -1,4 +1,6 @@
 <resources>
+    <string name="base_url">http://192.168.43.90/advokat/api/key/</string>
+    <string name="base_url_public">http://192.168.43.90/advokat/public/</string>
     <string name="app_name">Advokat Monitor</string>
     <string name="title_login">Login Admin Advokat</string>
     <string name="todo">TODO</string>

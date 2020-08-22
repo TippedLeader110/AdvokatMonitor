@@ -22,21 +22,26 @@
   <component name="DBNavigator.Project.DatabaseBrowserManager">
     <autoscroll-to-editor value="false" />
     <autoscroll-from-editor value="true" />
-    <show-object-properties value="true" />
-    <loaded-nodes />
+    <show-object-properties value="false" />
+    <loaded-nodes>
+      <connection connection-id="65ff6ad5-3c4f-46c7-a177-c4395983d408">
+        <schema name="main" object-types="index, table, column, dataset trigger, view, constraint" />
+      </connection>
+      <connection connection-id="35db5c88-9da6-4fc9-9878-20086e56c55e">
+        <schema name="main" object-types="index, table, column, dataset trigger, view, constraint" />
+      </connection>
+    </loaded-nodes>
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="65ff6ad5-3c4f-46c7-a177-c4395983d408">
-      <console name="Connection" type="STANDARD" schema="main" session="Main"><![CDATA[use login_save
-
-update settings set autologin = 1
-select * from login]]></console>
+      <console name="SQLite" type="STANDARD" schema="main" session="Main"><![CDATA[select * from
+ pengacara]]></console>
     </connection>
     <connection id="e771eda8-44fb-42a8-b07f-ba8b903a277f">
       <console name="MariaDB" type="STANDARD" schema="" session="Main" />
     </connection>
     <connection id="35db5c88-9da6-4fc9-9878-20086e56c55e">
-      <console name="Connection" type="STANDARD" schema="main" session="Main"><![CDATA[select  * from login]]></console>
+      <console name="SQLite1" type="STANDARD" schema="main" session="Main" />
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
@@ -48,7 +53,11 @@ select * from login]]></console>
     <connection id="35db5c88-9da6-4fc9-9878-20086e56c55e" />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-actions connection-id="65ff6ad5-3c4f-46c7-a177-c4395983d408" dataset="main.kasus" active-filter-id="" />
     <filter-actions connection-id="65ff6ad5-3c4f-46c7-a177-c4395983d408" dataset="main.android_metadata" active-filter-id="" />
+    <filter-actions connection-id="35db5c88-9da6-4fc9-9878-20086e56c55e" dataset="main.pengacara" active-filter-id="2565eb29-30eb-4d53-8abb-d96b011a8fb0">
+      <filter id="2565eb29-30eb-4d53-8abb-d96b011a8fb0" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND" />
+    </filter-actions>
   </component>
   <component name="DBNavigator.Project.EditorStateManager">
     <last-used-providers />
@@ -88,7 +97,7 @@ select * from login]]></console>
           <port value="1234" />
           <database value="database" />
           <files>
-            <file path="E:\Users\Bayhaqi\Documents\AndroidStudio\DeviceExplorer\sony-so_01j-CB512CMNDD\data\data\com.itcteam.advokatmonitor\databases\advokatdb" schema="main" />
+            <file path="E:\Users\Bayhaqi\Documents\AndroidStudio\DeviceExplorer\sony-so_01j-192.168.43.1_5555\data\data\com.itcteam.advokatmonitor\databases\advokatdb" schema="main" />
           </files>
           <type value="NONE" />
           <user value="" />
@@ -118,7 +127,7 @@ select * from login]]></console>
           <session-management value="true" />
           <ddl-file-binding value="true" />
           <database-logging value="false" />
-          <connect-automatically value="true" />
+          <connect-automatically value="false" />
           <restore-workspace value="true" />
           <restore-workspace-deep value="true" />
           <environment-type value="default" />
@@ -257,7 +266,7 @@ select * from login]]></console>
           <port value="1234" />
           <database value="database" />
           <files>
-            <file path="E:\Users\Bayhaqi\Documents\AndroidStudio\DeviceExplorer\sony-so_01j-CB512CMNDD\data\data\com.itcteam.advokatmonitor\databases\advokatdb1" schema="main" />
+            <file path="E:\Users\Bayhaqi\Documents\AndroidStudio\DeviceExplorer\sony-so_01j-192.168.43.1_5555\data\data\com.itcteam.advokatmonitor\databases\advokatdb1" schema="main" />
           </files>
           <type value="NONE" />
           <user value="" />

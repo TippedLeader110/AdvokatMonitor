@@ -13,7 +13,6 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-
         <ImageView
             android:id="@+id/fotopengacara_listview"
             android:layout_width="80dp"

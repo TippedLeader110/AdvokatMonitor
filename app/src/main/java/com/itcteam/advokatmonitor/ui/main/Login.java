@@ -20,6 +20,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.itcteam.advokatmonitor.R;
 import com.itcteam.advokatmonitor.dbclass.DatabaseHandlerAppSave;
+import com.itcteam.advokatmonitor.ui.main.kasus.Kasus;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -66,7 +67,7 @@ public class Login extends AppCompatActivity {
         pd.setMessage("Mencoba login");
         pd.show();
 //                pd.setContentView(R.layout.pd_login);
-        String url = "http://192.168.43.90/advokat/api/key/loginToken";
+        String url = getString(R.string.base_url)+"loginToken";
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
@@ -150,7 +151,7 @@ public class Login extends AppCompatActivity {
         pd.setTitle("Mohon Tunggu !!!");
         pd.setMessage("Mencoba login");
         pd.show();
-        String url = "http://192.168.43.90/advokat/api/key/login";
+        String url = getString(R.string.base_url)+"login";
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override

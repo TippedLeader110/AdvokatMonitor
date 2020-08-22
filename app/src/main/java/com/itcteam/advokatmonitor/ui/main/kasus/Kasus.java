@@ -1,4 +1,4 @@
-package com.itcteam.advokatmonitor.ui.main;
+package com.itcteam.advokatmonitor.ui.main.kasus;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -23,13 +24,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.itcteam.advokatmonitor.R;
 import com.itcteam.advokatmonitor.dbclass.DatabaseHandlerAppSave;
-import com.itcteam.advokatmonitor.ui.main.kasus_fragment.SectionsPagerAdapter;
+import com.itcteam.advokatmonitor.ui.main.Login;
+import com.itcteam.advokatmonitor.ui.main.kasus.kasus_fragment.SectionsPagerAdapter;
 import com.itcteam.advokatmonitor.simpletask.CekSesi;
 
 public class Kasus extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
     ProgressDialog pd;
     private String sResponse;
     DatabaseHandlerAppSave databaseHandlerAppSave;
+    TextView judulBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +40,8 @@ public class Kasus extends AppCompatActivity implements PopupMenu.OnMenuItemClic
         CekSesi ck = new CekSesi(Kasus.this);
         pd = new ProgressDialog(Kasus.this);
         ck.doJob();
+        setContentView(R.layout.activity_kasus);
+        judulBar = this.findViewById(R.id.title);
         if (ck.getStatus()){
             Intent intent = new Intent(Kasus.this, Login.class);
             startActivity(intent);
@@ -45,10 +50,10 @@ public class Kasus extends AppCompatActivity implements PopupMenu.OnMenuItemClic
             databaseHandlerAppSave = new DatabaseHandlerAppSave(Kasus.this);
             pd.setCancelable(false);
             pd.setTitle("Mohon Tunggu !!!");
-            pd.setMessage("Sinkronasi dengan database");
+            pd.setMessage("Memperbaharui daftar kasus");
             pd.show();
             RequestQueue queue = Volley.newRequestQueue(Kasus.this);
-            String url = "http://192.168.43.90/advokat/api/key/kasus";
+            String url = getString(R.string.base_url)+"kasus";
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                     new Response.Listener<String>() {
                         @Override
@@ -56,11 +61,19 @@ public class Kasus extends AppCompatActivity implements PopupMenu.OnMenuItemClic
                             sResponse = response;
                             if (pd.isShowing()){
                                 pd.dismiss();
+
                                 if (databaseHandlerAppSave.syncKasus(sResponse)){
                                     if (databaseHandlerAppSave.getNotif()){
-                                        showDialog("Sinkronasi Berhasil");
+//                                        showDialog("Sinkronasi Berhasil");
                                     }
-                                    setContentView(R.layout.activity_kasus);
+
+                                    if (databaseHandlerAppSave.getLevel()==1){
+                                        judulBar.setText("Advokat Monitor (ADMIN)");
+                                    }
+                                    else{
+                                        judulBar.setText("Advokat Monitor (Pengacara)");
+                                    }
+
                                     String level = getIntent().getStringExtra("LEVEL_ACCOUNT");
                                     SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(Kasus.this, getSupportFragmentManager(), Integer.parseInt(level));
                                     ViewPager viewPager = findViewById(R.id.view_pager);
@@ -94,12 +107,16 @@ public class Kasus extends AppCompatActivity implements PopupMenu.OnMenuItemClic
         pop.show();
     }
 
+
+
     @Override
     public boolean onMenuItemClick(MenuItem menuItem) {
         switch (menuItem.getItemId()){
             case R.id.item1:
                 Toast.makeText(this, "Logout !!!", Toast.LENGTH_SHORT).show();
+                databaseHandlerAppSave.clearDB(3);
                 databaseHandlerAppSave.clearDB(2);
+                databaseHandlerAppSave.clearDB(1);
                 Intent intent = new Intent(this, Login.class);
                 startActivity(intent);
                 finish();
