@@ -106,20 +106,31 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
             public void onClick(View view) {
                 AlertDialog alertDialog = new AlertDialog.Builder(context).create();
                 alertDialog.setTitle("Perhatian");
-                alertDialog.setMessage("Apakah anda ingirn mengirim email otomatis ke client perkara jadwal pertemuan dan kontak pengacara anda ?");
-                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Tidak",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
+                if (!waktuString.equals("null")){
+                    alertDialog.setMessage("Apakah anda ingirn mengirim email otomatis ke client perkara jadwal pertemuan dan kontak pengacara anda ?");
+                    alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Tidak",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
 
-                            }
-                        });
-                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Ya",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
+                                }
+                            });
+                    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Ya",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
 //                                sendMail();
-                            }
-                        });
+                                }
+                            });
+                }else{
+                    alertDialog.setMessage("Tentukan jadwal pertemuan terlebih dahulu untuk mengirim email otomatis ke client !!!");
+                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+
+                                }
+                            });
+                }
                 alertDialog.show();
 
             }
