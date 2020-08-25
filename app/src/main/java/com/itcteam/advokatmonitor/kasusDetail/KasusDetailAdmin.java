@@ -73,6 +73,8 @@ public class KasusDetailAdmin extends AppCompatActivity {
         fab  = this.findViewById(R.id.fab);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         CollapsingToolbarLayout toolBarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
         idKasus = Integer.parseInt(Objects.requireNonNull(getIntent().getStringExtra("id_kasus")));
         posisiFragment = Integer.parseInt(Objects.requireNonNull(getIntent().getStringExtra("posisi")));
@@ -236,14 +238,20 @@ public class KasusDetailAdmin extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (back==true){
-            Intent intent = new Intent(context, Kasus.class);
-            intent.putExtra("LEVEL_ACCOUNT", Integer.toString(appsave.getLevel()));
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            finish();
-        }else{
-            finish();
-        }
+        Intent intent = new Intent(context, Kasus.class);
+        intent.putExtra("LEVEL_ACCOUNT", Integer.toString(appsave.getLevel()));
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        Intent intent = new Intent(context, Kasus.class);
+        intent.putExtra("LEVEL_ACCOUNT", Integer.toString(appsave.getLevel()));
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
+        return true;
     }
 }

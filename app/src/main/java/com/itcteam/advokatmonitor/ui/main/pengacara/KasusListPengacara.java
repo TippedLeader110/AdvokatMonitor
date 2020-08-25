@@ -52,6 +52,8 @@ public class KasusListPengacara extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_kasus_list_pengacara);
+        assert getSupportActionBar() != null;   //null check
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);   //show back button
         pd = new ProgressDialog(this);
         context = this;
         id_kasus = Integer.parseInt(Objects.requireNonNull(getIntent().getStringExtra("id_kasus")));
@@ -176,6 +178,12 @@ public class KasusListPengacara extends AppCompatActivity {
                 queue.add(objS);
             }
         });
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 }
 

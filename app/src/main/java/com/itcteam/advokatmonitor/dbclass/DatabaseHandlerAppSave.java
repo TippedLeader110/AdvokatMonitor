@@ -274,9 +274,15 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
             dataKasus.put("pengirim",cursor.getString(cursor.getColumnIndex("nama")));
             dataKasus.put("ktp",cursor.getString(cursor.getColumnIndex("ktp")));
             dataKasus.put("id_p",cursor.getString(cursor.getColumnIndex("id_p")));
+            dataKasus.put("tanggal_jumpa",cursor.getString(cursor.getColumnIndex("tanggal_jumpa")));
+            dataKasus.put("pekerjaan",cursor.getString(cursor.getColumnIndex("pekerjaan")));
+            dataKasus.put("tempat_lahir",cursor.getString(cursor.getColumnIndex("tempat_lahir")));
+            dataKasus.put("tanggal_lahir",cursor.getString(cursor.getColumnIndex("tanggal_lahir")));
+            db.close();
             return dataKasus;
         }else {
             Log.e("error not found", "data can't be found or database empty (kasus)");
+            db.close();
             return dataKasus;
         }
     }

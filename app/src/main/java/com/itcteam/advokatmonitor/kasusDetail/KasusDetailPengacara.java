@@ -24,6 +24,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.viewpager.widget.ViewPager;
 
 import android.text.InputType;
 import android.util.Log;
@@ -34,11 +35,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.tabs.TabLayout;
 import com.itcteam.advokatmonitor.R;
 import com.itcteam.advokatmonitor.dbclass.DatabaseHandlerAppSave;
 import com.itcteam.advokatmonitor.simpletask.TampilAlertDialog;
 import com.itcteam.advokatmonitor.ui.main.Login;
 import com.itcteam.advokatmonitor.ui.main.kasus.Kasus;
+import com.itcteam.advokatmonitor.ui.main.kasus.kasus_fragment.SectionsPagerAdapter;
 import com.itcteam.advokatmonitor.ui.main.pengacara.KasusListPengacara;
 
 import org.json.JSONException;
@@ -87,6 +90,8 @@ public class KasusDetailPengacara extends AppCompatActivity {
         fab  = this.findViewById(R.id.fab);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         CollapsingToolbarLayout toolBarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
         idKasus = Integer.parseInt(Objects.requireNonNull(getIntent().getStringExtra("id_kasus")));
         posisiFragment = Integer.parseInt(Objects.requireNonNull(getIntent().getStringExtra("posisi")));
@@ -136,11 +141,10 @@ public class KasusDetailPengacara extends AppCompatActivity {
                 int day = calendar.get(Calendar.DAY_OF_MONTH);
                 DatePickerDialog dialog = new DatePickerDialog(
                         context,
-                        android.R.style.Theme_Holo_Dialog_MinWidth,
                         dateSetListener,
                         year, month, day
                 );
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dialog.show();
             }
         });
@@ -149,8 +153,15 @@ public class KasusDetailPengacara extends AppCompatActivity {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 month = month + 1;
-                String date = year+"-"+month+"-"+day;
+                String monthShow = "0";
+                if (month>=10){
+                    monthShow = Integer.toString(month);
+                }else{
+                    monthShow = "0"+month;
+                }
+                String date = year+"-"+monthShow+"-"+day;
                 Log.w("Date", date);
+                changeDate(date);
             }
         };
 
@@ -229,6 +240,120 @@ public class KasusDetailPengacara extends AppCompatActivity {
         });
     }
 
+    private void changeDate(final String date) {
+        pd.setTitle("Mohon Tunggu !!!");
+        pd.setMessage("Sedang memproses");
+        pd.show();
+        if (pd.isShowing()){
+            RequestQueue queue = Volley.newRequestQueue(KasusDetailPengacara.this);
+            String url = getString(R.string.base_url)+"gantiTanggal";
+            StringRequest objR = new StringRequest(Request.Method.POST, url,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            if (pd.isShowing())
+                                pd.dismiss();
+                            try {
+                                JSONObject jb = new JSONObject(response);
+                                if (jb.getString("error")=="false"){
+                                    back = true;
+                                    AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+                                    alertDialog.setTitle("Berhasil");
+                                    if (status=="Kasus Baru"){
+                                        alertDialog.setMessage("Tanggal jumpa dengan client berhasil diubah. Status kasus berubah menjadi kasus berjalan");
+                                    }else{
+                                        alertDialog.setMessage("Tanggal jumpa dengan client berhasil diubah");
+                                    }
+                                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+//                                                    afterChangeData();
+                                                }
+                                            });
+                                    alertDialog.show();
+                                }else if(jb.getString("error")=="fail"){
+                                    talert.tampilDialogDefault("Kesalahan", "Terjadi kesalahan");
+
+                                }
+                                else{
+                                    talert.tampilDialogDefault("Kesalahan", "sesi telah habis, silahkan login kembali");
+                                    Intent intent = new Intent(context, Login.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    finish();
+                                    startActivity(intent);
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            error.printStackTrace();
+                        }
+                    }
+            ){
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("id",Integer.toString(idKasus));
+                    params.put("token",appsave.getToken());
+                    params.put("tanggal",date);
+                    return params;
+                }
+            };
+            queue.add(objR);
+        }
+    }
+
+    private void afterChangeData() {
+        pd.setCancelable(false);
+        pd.setTitle("Mohon Tunggu !!!");
+        pd.setMessage("Memperbaharui data kasus");
+        pd.show();
+        RequestQueue queue = Volley.newRequestQueue(context);
+        String url = getString(R.string.base_url)+"kasus";
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        String sResponse = response;
+                        if (pd.isShowing()){
+                            if (appsave.syncKasus(sResponse)){
+                                pd.dismiss();
+                                Intent intent = new Intent(context, Kasus.class);
+                                intent.putExtra("LEVEL_ACCOUNT", Integer.toString(appsave.getLevel()));
+                                startActivity(intent);
+                                finish();
+//                                Intent intent = new Intent(context, KasusDetailPengacara.class);
+//                                intent.putExtra("id_kasus", Integer.toString(idKasus));
+//                                intent.putExtra("posisi",  Integer.toString(posisiFragment));
+//                                startActivity(intent);
+                            }
+                            else{
+                                talert.tampilDialogDefault("Kesalahan", "sesi telah habis, silahkan login kembali");
+                            }
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("level",Integer.toString(appsave.getLevel()));
+                params.put("token",appsave.getToken());
+                return params;
+            }
+        };
+        queue.add(stringRequest);
+    }
+
     public void statusButton(Integer logo, String text){
 //        Drawable drawable = getResources().getDrawable(logo);
         status_button.setCompoundDrawablesWithIntrinsicBounds(0, logo, 0, 0);
@@ -280,24 +405,37 @@ public class KasusDetailPengacara extends AppCompatActivity {
         pengirim_detail.setText(pengirim);
         ktp_detail.setText(ktp);
         status_text_detail.setText(status);
-        pekerjaan.setText(pekerjaanString);
-        tmpt_lhr.setText(tmpt);
-        tgl_lhr.setText(tgl);
-        if (waktuString!=null){
+        if (!pekerjaanString.equals("null")){
+            pekerjaan.setText(pekerjaanString);
+        }
+        if (!tmpt.equals("null")){
+            tmpt_lhr.setText(tmpt);
+        }
+        if (!tgl.equals("null")){
+            tgl_lhr.setText(tgl);
+        }
+        Log.w("waktu", String.valueOf(waktuString));
+        if (!waktuString.equals("null")){
             waktu.setText(waktuString);
         }
     }
 
     @Override
     public void onBackPressed() {
-        if (back==true){
-            Intent intent = new Intent(context, Kasus.class);
-            intent.putExtra("LEVEL_ACCOUNT", Integer.toString(appsave.getLevel()));
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            finish();
-        }else{
-            finish();
-        }
+        Intent intent = new Intent(context, Kasus.class);
+        intent.putExtra("LEVEL_ACCOUNT", Integer.toString(appsave.getLevel()));
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        Intent intent = new Intent(context, Kasus.class);
+        intent.putExtra("LEVEL_ACCOUNT", Integer.toString(appsave.getLevel()));
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
+        return true;
     }
 }

@@ -112,6 +112,7 @@ public class FragKasusBerjalan extends Fragment {
                 intent.putExtra("id_kasus", idval);
                 intent.putExtra("posisi",  Integer.toString(mParam1));
                 startActivity(intent);
+                getActivity().finish();
             }
         });
         return root;
