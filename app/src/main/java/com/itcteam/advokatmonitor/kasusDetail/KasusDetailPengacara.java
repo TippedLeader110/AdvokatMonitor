@@ -106,7 +106,7 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
             public void onClick(View view) {
                 AlertDialog alertDialog = new AlertDialog.Builder(context).create();
                 alertDialog.setTitle("Perhatian");
-                alertDialog.setMessage("Apakah anda ingirn mengirim email otomatis ke client perkara jadwal pertemuan dan kontak pengacara anda >");
+                alertDialog.setMessage("Apakah anda ingirn mengirim email otomatis ke client perkara jadwal pertemuan dan kontak pengacara anda ?");
                 alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Tidak",
                         new DialogInterface.OnClickListener() {
                             @Override
