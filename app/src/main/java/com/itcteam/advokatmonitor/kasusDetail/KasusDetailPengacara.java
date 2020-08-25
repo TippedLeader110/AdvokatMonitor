@@ -52,7 +52,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class KasusDetailPengacara extends AppCompatActivity {
+public class KasusDetailPengacara extends AppCompatActivity implements DialogEditKasus.EditDialogListener{
 
     DatabaseHandlerAppSave appsave;
     ProgressDialog pd;
@@ -104,29 +104,22 @@ public class KasusDetailPengacara extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("Title");
-                // Set up the input
-                final EditText input = new EditText(context);
-                // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-                input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
-                builder.setView(input);
-
-                // Set up the buttons
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(context, input.getText().toString(), Toast.LENGTH_SHORT).show();
-                    }
+                final AlertDialog alertDialog = new AlertDialog().Builder(context).create();
+                alertDialog.setTitle("Kirim Email ke Client");
+                alertDialog.setMessage("Apakah anda ingin mengirim email otomatis ke client perkara jadwal dan kontak pengacara ?");
+                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Tidak",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                alertDialog.dismiss();
+                            }
                 });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Ya",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+//                                sendMail();
+                            }
                 });
-
-                builder.show();
             }
         });
 
@@ -168,6 +161,14 @@ public class KasusDetailPengacara extends AppCompatActivity {
         status_button = this.findViewById(R.id.status_detail_pengacara);
 
         contentChangebyStatus();
+
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DialogEditKasus dialogEditKasus = new DialogEditKasus();
+                dialogEditKasus.show(getSupportFragmentManager(), "Edit Kasus");
+            }
+        });
 
         status_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -322,8 +323,9 @@ public class KasusDetailPengacara extends AppCompatActivity {
                         if (pd.isShowing()){
                             if (appsave.syncKasus(sResponse)){
                                 pd.dismiss();
-                                Intent intent = new Intent(context, Kasus.class);
-                                intent.putExtra("LEVEL_ACCOUNT", Integer.toString(appsave.getLevel()));
+                                Intent intent = new Intent(context, KasusDetailPengacara.class);
+                                intent.putExtra("id_kasus", Integer.toString(idKasus));
+                                intent.putExtra("posisi",  Integer.toString(posisiFragment));
                                 startActivity(intent);
                                 finish();
 //                                Intent intent = new Intent(context, KasusDetailPengacara.class);
@@ -332,7 +334,10 @@ public class KasusDetailPengacara extends AppCompatActivity {
 //                                startActivity(intent);
                             }
                             else{
-                                talert.tampilDialogDefault("Kesalahan", "sesi telah habis, silahkan login kembali");
+//                                talert.tampilDialogDefault("Kesalahan", "sesi telah habis, silahkan login kembali");
+                                Intent intent = new Intent(context, Login.class);
+                                startActivity(intent);
+                                finish();
                             }
                         }
                     }
@@ -417,6 +422,9 @@ public class KasusDetailPengacara extends AppCompatActivity {
         Log.w("waktu", String.valueOf(waktuString));
         if (!waktuString.equals("null")){
             waktu.setText(waktuString);
+            fab.setEnabled(true);
+        }else{
+            fab.setEnabled(false);
         }
     }
 
@@ -437,5 +445,70 @@ public class KasusDetailPengacara extends AppCompatActivity {
         startActivity(intent);
         finish();
         return true;
+    }
+
+    @Override
+    public void terimaDataDialog(final String tanggalString, final String tempatString, final String pekerjaanString) {
+//        Log.w("DDD", tanggalString + "+" + tempatString + "+" + pekerjaanString);
+        pd.setCancelable(false);
+        pd.setTitle("Mohon Tunggu !!!");
+        pd.setMessage("Memperbaharui data kasus");
+        pd.show();
+        RequestQueue queue = Volley.newRequestQueue(context);
+        String url = getString(R.string.base_url)+"editKasus";
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        if (pd.isShowing()){
+                            try {
+                                JSONObject jb = new JSONObject(response);
+                                if (jb.getString("error")=="false"){
+                                    back = true;
+                                    AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+                                    alertDialog.setTitle("Berhasil");
+                                    alertDialog.setMessage("Data berhasil diperbaharui !!!");
+                                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    afterChangeData();
+                                                }
+                                            });
+                                    alertDialog.show();
+                                }else if(jb.getString("error")=="fail"){
+                                    talert.tampilDialogDefault("Kesalahan", "Terjadi kesalahan");
+                                }
+                                else{
+                                    talert.tampilDialogDefault("Kesalahan", "sesi telah habis, silahkan login kembali");
+//                                    Intent intent = new Intent(context, Login.class);
+//                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                                    finish();
+//                                    startActivity(intent);
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("level",Integer.toString(appsave.getLevel()));
+                params.put("token",appsave.getToken());
+                params.put("id",Integer.toString(idKasus));
+                params.put("tempat",tempatString);
+                params.put("tanggal",tanggalString);
+                params.put("pekerjaan",pekerjaanString);
+                return params;
+            }
+        };
+        queue.add(stringRequest);
     }
 }
