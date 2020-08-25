@@ -104,22 +104,24 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final AlertDialog alertDialog = new AlertDialog().Builder(context).create();
-                alertDialog.setTitle("Kirim Email ke Client");
-                alertDialog.setMessage("Apakah anda ingin mengirim email otomatis ke client perkara jadwal dan kontak pengacara ?");
+                AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+                alertDialog.setTitle("Perhatian");
+                alertDialog.setMessage("Apakah anda ingirn mengirim email otomatis ke client perkara jadwal pertemuan dan kontak pengacara anda >");
                 alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Tidak",
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                alertDialog.dismiss();
+
                             }
-                });
+                        });
                 alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Ya",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
 //                                sendMail();
                             }
-                });
+                        });
+                alertDialog.show();
+
             }
         });
 
@@ -422,9 +424,9 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
         Log.w("waktu", String.valueOf(waktuString));
         if (!waktuString.equals("null")){
             waktu.setText(waktuString);
-            fab.setEnabled(true);
+//            fab.setEnabled(true);
         }else{
-            fab.setEnabled(false);
+//            fab.setEnabled(false);
         }
     }
 
