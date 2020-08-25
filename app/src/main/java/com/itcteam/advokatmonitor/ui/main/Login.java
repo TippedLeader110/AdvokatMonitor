@@ -165,7 +165,7 @@ public class Login extends AppCompatActivity {
                                         if (DBSet.autoLogin(response)){
                                             AlertDialog alertDialog = new AlertDialog.Builder(Login.this).create();
                                             alertDialog.setTitle("Peringatan");
-                                            alertDialog.setMessage("Selamat Datang");
+                                            alertDialog.setMessage("Selamat Datang " + reader.getString("name"));
                                             alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                                                     new DialogInterface.OnClickListener() {
                                                         public void onClick(DialogInterface dialog, int which) {

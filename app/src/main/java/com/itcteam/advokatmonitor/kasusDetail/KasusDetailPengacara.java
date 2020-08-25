@@ -57,7 +57,7 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
     DatabaseHandlerAppSave appsave;
     ProgressDialog pd;
     TextView judul_detail, pengirim_detail, status_text_detail, ktp_detail, nama_pengacara, tgl_lhr, tmpt_lhr, pekerjaan, tgl_lhrdo, tmpt_lhrdo, pekerjaando, waktu;
-    Button kalender, status_button, edit, add;
+    Button kalender, status_button, edit, add, sukses;
     FloatingActionButton fab;
     String judul, pengirim, ktp, status, tmpt, tgl, pekerjaanString, waktuString;
     Context context;
@@ -82,6 +82,7 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
         tmpt_lhr = this.findViewById(R.id.tmptlahir_detail_pengacara);
         tgl_lhr = this.findViewById(R.id.tgllahir_detail_pengacara);
         pekerjaan = this.findViewById(R.id.pekerjaan_detail_pengacara);
+        sukses = this.findViewById(R.id.sukses_kasus);
         waktu = this.findViewById(R.id.waktu_detail_pengacara);
         nama_pengacara = this.findViewById(R.id.nama_pengacara_detail_pengacara);
         edit = this.findViewById(R.id.edit_detail_pengacara);
@@ -107,20 +108,31 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
                 AlertDialog alertDialog = new AlertDialog.Builder(context).create();
                 alertDialog.setTitle("Perhatian");
                 if (!waktuString.equals("null")){
-                    alertDialog.setMessage("Apakah anda ingirn mengirim email otomatis ke client perkara jadwal pertemuan dan kontak pengacara anda ?");
-                    alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Tidak",
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
+                    if (status.equals("Kasus Berjalan")){
+                        alertDialog.setMessage("Apakah anda ingin mengirim email otomatis ke client perkara jadwal pertemuan dan kontak pengacara anda ?");
+                        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Tidak",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
 
-                                }
-                            });
-                    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Ya",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                });
+                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Ya",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
 //                                sendMail();
-                                }
-                            });
+                                    }
+                                });
+                    }else{
+                        alertDialog.setMessage("Ubah status kasus menjadi berjalan untuk mengirim email ke client !!!");
+                        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                                    }
+                                });
+                    }
                 }else{
                     alertDialog.setMessage("Tentukan jadwal pertemuan terlebih dahulu untuk mengirim email otomatis ke client !!!");
                     alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
@@ -183,6 +195,29 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
             }
         });
 
+        sukses.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+                alertDialog.setTitle("Perhatian");
+                alertDialog.setMessage("Apakah anda ingin menyelesaikan kasus ini ?");
+                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Mungkin tidak",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        });
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Ya",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                kasusSelesai();
+                            }
+                        });
+                alertDialog.show();
+            }
+        });
+
         status_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -209,6 +244,7 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
                                             alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                                                     new DialogInterface.OnClickListener() {
                                                         public void onClick(DialogInterface dialog, int which) {
+//                                                            afterChangeData();
                                                             Intent intent = new Intent(context, Kasus.class);
                                                             intent.putExtra("LEVEL_ACCOUNT", Integer.toString(appsave.getLevel()));
                                                             finish();
@@ -254,6 +290,72 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
         });
     }
 
+    private void  kasusSelesai(){
+        pd.setTitle("Mohon Tunggu !!!");
+        pd.setMessage("Sedang memproses");
+        pd.show();
+        if (pd.isShowing()){
+            RequestQueue queue = Volley.newRequestQueue(KasusDetailPengacara.this);
+            String url = getString(R.string.base_url)+"kasusSelesai";
+            StringRequest objR = new StringRequest(Request.Method.POST, url,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            if (pd.isShowing())
+                                pd.dismiss();
+                            try {
+                                JSONObject jb = new JSONObject(response);
+                                if (jb.getString("error")=="false"){
+                                    back = true;
+                                    AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+                                    alertDialog.setTitle("Berhasil");
+                                    alertDialog.setMessage("Status sudah selesai");
+                                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    Intent intent = new Intent(context, Kasus.class);
+                                                    intent.putExtra("LEVEL_ACCOUNT", Integer.toString(appsave.getLevel()));
+                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                    startActivity(intent);
+                                                    finish();
+                                                }
+                                            });
+                                    alertDialog.show();
+                                }else if(jb.getString("error")=="fail"){
+                                    talert.tampilDialogDefault("Kesalahan", "Terjadi kesalahan");
+
+                                }
+                                else{
+                                    talert.tampilDialogDefault("Kesalahan", "sesi telah habis, silahkan login kembali");
+                                    Intent intent = new Intent(context, Login.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    finish();
+                                    startActivity(intent);
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            error.printStackTrace();
+                        }
+                    }
+            ){
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("id",Integer.toString(idKasus));
+                    params.put("token",appsave.getToken());
+                    return params;
+                }
+            };
+            queue.add(objR);
+        }
+    }
+
     private void changeDate(final String date) {
         pd.setTitle("Mohon Tunggu !!!");
         pd.setMessage("Sedang memproses");
@@ -281,7 +383,7 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
                                     alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                                             new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog, int which) {
-//                                                    afterChangeData();
+                                                    afterChangeData();
                                                 }
                                             });
                                     alertDialog.show();
@@ -336,11 +438,11 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
                         if (pd.isShowing()){
                             if (appsave.syncKasus(sResponse)){
                                 pd.dismiss();
+                                finish();
                                 Intent intent = new Intent(context, KasusDetailPengacara.class);
                                 intent.putExtra("id_kasus", Integer.toString(idKasus));
                                 intent.putExtra("posisi",  Integer.toString(posisiFragment));
                                 startActivity(intent);
-                                finish();
 //                                Intent intent = new Intent(context, KasusDetailPengacara.class);
 //                                intent.putExtra("id_kasus", Integer.toString(idKasus));
 //                                intent.putExtra("posisi",  Integer.toString(posisiFragment));
@@ -391,6 +493,13 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
             kalender.setText("Ganti Jadwal Jumpa");
             Log.w("Pekerjaan", String.valueOf(pekerjaanString));
         }else{
+
+        }
+
+        if (status=="Kasus Berjalan"){
+            edit.setEnabled(true);
+            add.setEnabled(true);
+        }else{
             edit.setEnabled(false);
             add.setEnabled(false);
         }
@@ -398,6 +507,7 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
         if(status=="Kasus Baru"){
             statusButton(R.drawable.ic_baseline_block_24, "Tolak Kasus");
         }else if(status=="Kasus Berjalan"){
+            sukses.setVisibility(sukses.VISIBLE);
             statusButton(R.drawable.ic_baseline_block_24, "Batalkan Kasus");
         }else if(status=="Kasus Selesai"){
             statusButton(R.drawable.ic_baseline_check_24, "Buka Kembali Kasus");

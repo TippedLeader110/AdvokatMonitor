@@ -78,6 +78,19 @@
                     android:drawableTop="@drawable/ic_baseline_add_24"
                     android:text="Tambah Dokumen" />
 
+                <Button
+                    android:id="@+id/sukses_kasus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:drawableTop="@drawable/ic_baseline_check_24"
+                    android:text="Kasus Selesai"
+                    android:visibility="gone"
+                    />
+
             </LinearLayout>
         </HorizontalScrollView>
 

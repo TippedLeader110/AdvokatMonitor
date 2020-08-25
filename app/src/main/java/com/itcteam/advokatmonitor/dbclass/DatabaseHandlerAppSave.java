@@ -96,11 +96,15 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
         if (mCursor.moveToFirst())
         {
             Log.w("checkRow","Ada row");
+            mCursor.close();
+            db.close();
             return true;
         }
         else
         {
             Log.w("checkRow","Tidak Ada row");
+            mCursor.close();
+            db.close();
             return false;
         }
     }
@@ -111,9 +115,11 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
         contentValues.put(KEY_AUTO, 0 );
         if (db.insert(TABLE_SETTINGS, null, contentValues)!=-1){
             Log.w("insertFirstRow","Berhasil");
+            db.close();
             return true;
         }else{
             Log.w("insertFirstRow","Gagal");
+            db.close();
             return false;
         }
     }
@@ -133,6 +139,7 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
             Log.w("updateSession jika ada row","Nilai : "+Boolean.toString(c));
         }
         Log.w("Return C ",Boolean.toString(c));
+        db.close();
         return  c;
     }
 
@@ -142,13 +149,19 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
         res.moveToFirst();
         if (res.moveToLast()) {
             if (res.getInt(0)==1){
+                res.close();
+                db.close();
                 return true;
             }
             else{
+                res.close();
+                db.close();
                 return false;
             }
         }else {
             Log.e("error not found", "data can't be found or database empty (login)");
+            res.close();
+            db.close();
             return false;
         }
     }
@@ -158,9 +171,14 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
         Cursor res = db.rawQuery( "select * from "+TABLE_SETTINGS, null );
         res.moveToFirst();
         if (res.moveToLast()) {
-            return res.getString(5);
+            String ret = res.getString(5);
+            res.close();
+            db.close();
+            return ret;
         }else {
             Log.e("error not found", "data can't be found or database empty (token)");
+            res.close();
+            db.close();
             return null;
         }
     }
@@ -182,6 +200,8 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
             kasus.put("ktp",cursor.getString(cursor.getColumnIndex("ktp")));
             daftarKasus.add(kasus);
         }
+        cursor.close();
+        db.close();
         return daftarKasus;
     }
 
@@ -211,8 +231,8 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
             kasus.put("ktp",cursor.getString(cursor.getColumnIndex("ktp")));
             daftarKasus.add(kasus);
         }
-
-
+        cursor.close();
+        db.close();
         return daftarKasus;
     }
 
@@ -221,6 +241,7 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_AUTO, 0);
         db.update(TABLE_SETTINGS, contentValues, null, null);
+        db.close();
     }
 
     public Integer getLevel() {
@@ -228,8 +249,13 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
         Cursor res = db.rawQuery( "select * from "+TABLE_SETTINGS, null );
         res.moveToFirst();
         if (res.moveToLast()) {
-            return res.getInt(4);
+            Integer ret = res.getInt(4);
+            res.close();
+            db.close();
+            return ret;
         }else {
+            res.close();
+            db.close();
             Log.e("error not found", "data can't be found or database empty (level)");
             return null;
         }
@@ -246,6 +272,8 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
             Log.e("error not found", "data can't be found or database empty (pengacara)");
             pengacara = "Belum Dipilih";
         }
+        cursor.close();
+        db.close();
         return pengacara;
     }
 
@@ -278,10 +306,12 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
             dataKasus.put("pekerjaan",cursor.getString(cursor.getColumnIndex("pekerjaan")));
             dataKasus.put("tempat_lahir",cursor.getString(cursor.getColumnIndex("tempat_lahir")));
             dataKasus.put("tanggal_lahir",cursor.getString(cursor.getColumnIndex("tanggal_lahir")));
+            cursor.close();
             db.close();
             return dataKasus;
         }else {
             Log.e("error not found", "data can't be found or database empty (kasus)");
+            cursor.close();
             db.close();
             return dataKasus;
         }
@@ -305,6 +335,7 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
             contentValues.put(KEY_NAME, name);
             contentValues.put(KEY_AUTO, 1);
             Integer ret = db.update(TABLE_SETTINGS, contentValues, null, null);
+            db.close();
             if (ret>0)
                 return true;
             else{
@@ -327,10 +358,11 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
             table = TABLE_SETTINGS;
         }
         db.execSQL("DELETE FROM " + table);
+        db.close();
     }
 
     public boolean syncKasus(String response){
-        db = this.getWritableDatabase();
+//        db = this.getWritableDatabase();
         Boolean done = false;
         try {
             JSONObject Jselect = new JSONObject(response);
@@ -355,7 +387,9 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
                     contentValues.put("tempat_lahir", jsonObject.getString("tempat_lahir"));
                     contentValues.put("tanggal_lahir", jsonObject.getString("tanggal_lahir"));
                     contentValues.put("update_time", jsonObject.getString("update_time"));
+                    db = this.getWritableDatabase();
                     long ret = db.insert(TABLE_KASUS, null, contentValues);
+                    db.close();
                     notif = true;
                     if (ret!=-1){
                         done = true;
@@ -374,7 +408,9 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
                     contentValuesP.put("email", jsonObjectP.getString("email"));
                     contentValuesP.put("nohp", jsonObjectP.getString("nohp"));
                     contentValuesP.put("foto", jsonObjectP.getString("foto"));
+                    db = this.getWritableDatabase();
                     Long ret = db.insert(TABLE_PENGACARA, null, contentValuesP);
+                    db.close();
                     if (ret!=-1){
                         done = true;
                     }else{
@@ -402,11 +438,13 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
         boolean keputusan = false;
         if (res.moveToLast()) {
             if (!update_time.equals(res.getString(6))){
+                db.close();
 //                Log.w("UPD", update_time + "++++" + res.getString(6));
-                db = this.getWritableDatabase();
                 ContentValues contentValues = new ContentValues();
                 contentValues.put("sync", update_time);
+                db = this.getWritableDatabase();
                 int ret = db.update(TABLE_SETTINGS, contentValues, null, null);
+                db.close();
                 keputusan = true;
             }else{
                 keputusan = false;
@@ -414,6 +452,7 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
         }else {
             keputusan = false;
         }
+        res.close();
         Log.e("le", String.valueOf(keputusan));
         return keputusan;
     }
@@ -451,4 +490,5 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
             return false;
         }
     }
+
 }
