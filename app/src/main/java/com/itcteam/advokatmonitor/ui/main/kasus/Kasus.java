@@ -10,6 +10,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -27,6 +28,9 @@ import com.itcteam.advokatmonitor.dbclass.DatabaseHandlerAppSave;
 import com.itcteam.advokatmonitor.ui.main.Login;
 import com.itcteam.advokatmonitor.ui.main.kasus.kasus_fragment.SectionsPagerAdapter;
 import com.itcteam.advokatmonitor.simpletask.CekSesi;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Kasus extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
     ProgressDialog pd;
@@ -54,7 +58,7 @@ public class Kasus extends AppCompatActivity implements PopupMenu.OnMenuItemClic
             pd.show();
             RequestQueue queue = Volley.newRequestQueue(Kasus.this);
             String url = getString(R.string.base_url)+"kasus";
-            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -66,7 +70,6 @@ public class Kasus extends AppCompatActivity implements PopupMenu.OnMenuItemClic
                                     if (databaseHandlerAppSave.getNotif()){
 //                                        showDialog("Sinkronasi Berhasil");
                                     }
-
                                     if (databaseHandlerAppSave.getLevel()==1){
                                         judulBar.setText("Advokat Monitor (ADMIN)");
                                     }
@@ -95,7 +98,15 @@ public class Kasus extends AppCompatActivity implements PopupMenu.OnMenuItemClic
                         public void onErrorResponse(VolleyError error) {
                             error.printStackTrace();
                         }
-                    });
+                    }){
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("level",Integer.toString(databaseHandlerAppSave.getLevel()));
+                    params.put("token",databaseHandlerAppSave.getToken());
+                    return params;
+                }
+            };
             queue.add(stringRequest);
         }
     }

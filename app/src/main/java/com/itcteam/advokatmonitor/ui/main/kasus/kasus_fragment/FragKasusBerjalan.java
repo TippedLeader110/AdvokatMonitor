@@ -24,6 +24,7 @@ import com.android.volley.toolbox.Volley;
 import com.itcteam.advokatmonitor.kasusDetail.KasusDetailAdmin;
 import com.itcteam.advokatmonitor.dbclass.DatabaseHandlerAppSave;
 import com.itcteam.advokatmonitor.R;
+import com.itcteam.advokatmonitor.kasusDetail.KasusDetailPengacara;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -85,8 +86,14 @@ public class FragKasusBerjalan extends Fragment {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_frag_kasus, container, false);
         listView = root.findViewById(R.id.listViewBerjalan);
-        DatabaseHandlerAppSave databaseHandlerAppSave = new DatabaseHandlerAppSave(getContext());
-        ArrayList<HashMap<String, String>> daftarKasus = databaseHandlerAppSave.getKasus(mParam1);
+        final DatabaseHandlerAppSave databaseHandlerAppSave = new DatabaseHandlerAppSave(getContext());
+        ArrayList<HashMap<String, String>> daftarKasus;
+        if(databaseHandlerAppSave.getLevel()==1){
+            daftarKasus = databaseHandlerAppSave.getKasus(mParam1);
+        }
+        else{
+            daftarKasus = databaseHandlerAppSave.getKasusPengacara(mParam1);
+        }
         ListAdapter adapter = new SimpleAdapter(root.getContext(), daftarKasus, R.layout.listview_fragmentkasus,new String[]{"id","judul","pengirim","ktp"}, new int[]{R.id.id_listview,R.id.judul_listview, R.id.pengirim_listview, R.id.ktp});
         listView.setAdapter(adapter);
         listView.setClickable(true);
@@ -94,8 +101,14 @@ public class FragKasusBerjalan extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 TextView id = view.findViewById(R.id.id_listview);
+                Intent intent;
                 String idval = (String) id.getText();
-                Intent intent = new Intent(getContext(), KasusDetailAdmin.class);
+                if (databaseHandlerAppSave.getLevel()==1){
+                     intent = new Intent(getContext(), KasusDetailAdmin.class);
+                }
+                else{
+                    intent = new Intent(getContext(), KasusDetailPengacara.class);
+                }
                 intent.putExtra("id_kasus", idval);
                 intent.putExtra("posisi",  Integer.toString(mParam1));
                 startActivity(intent);

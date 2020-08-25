@@ -185,6 +185,37 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
         return daftarKasus;
     }
 
+    public ArrayList<HashMap<String, String>> getKasusPengacara(Integer statusInt){
+        db = this.getReadableDatabase();
+        ArrayList<HashMap<String, String>> daftarKasus = new ArrayList<>();
+        Cursor cursor;
+//        Log.e("statusInt" , String.valueOf(statusInt));
+        if (statusInt==1){
+            cursor = db.rawQuery( "select * from "+TABLE_KASUS + " where status = 2 AND tanggal_jumpa = 'null' ", null );
+        }
+        else if (statusInt==2){
+            cursor = db.rawQuery( "select * from "+TABLE_KASUS + " where status = 2 AND tanggal_jumpa <> 'null' ", null );
+        }
+        else if (statusInt==3){
+            cursor = db.rawQuery( "select * from "+TABLE_KASUS + " where status = 3 ", null );
+        }
+        else{
+            cursor = db.rawQuery( "select * from "+TABLE_KASUS + " where status = 4 OR status = 0", null );
+        }
+
+        while (cursor.moveToNext()){
+            HashMap<String,String> kasus = new HashMap<>();
+            kasus.put("id",Integer.toString(cursor.getInt(cursor.getColumnIndex("id_masalah"))));
+            kasus.put("judul",cursor.getString(cursor.getColumnIndex("deskripsi")));
+            kasus.put("pengirim",cursor.getString(cursor.getColumnIndex("nama")));
+            kasus.put("ktp",cursor.getString(cursor.getColumnIndex("ktp")));
+            daftarKasus.add(kasus);
+        }
+
+
+        return daftarKasus;
+    }
+
     public void reLogin() {
         db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
