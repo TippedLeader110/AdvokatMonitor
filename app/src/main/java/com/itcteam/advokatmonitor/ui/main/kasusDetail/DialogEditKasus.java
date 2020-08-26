@@ -6,7 +6,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
@@ -31,7 +30,7 @@ public class DialogEditKasus extends DialogFragment {
         AlertDialog.Builder builder= new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.edit_kasus, null);
+        View view = inflater.inflate(R.layout.dialog_edit_kasus, null);
         
         builder.setView(view)
                 .setTitle("Edit Kasus")

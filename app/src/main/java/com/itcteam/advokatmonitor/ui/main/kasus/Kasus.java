@@ -125,7 +125,7 @@ public class Kasus extends AppCompatActivity implements PopupMenu.OnMenuItemClic
         switch (menuItem.getItemId()){
             case R.id.item1:
                 Toast.makeText(this, "Logout !!!", Toast.LENGTH_SHORT).show();
-                databaseHandlerAppSave.clearDB(3);
+//                databaseHandlerAppSave.clearDB(3);
                 databaseHandlerAppSave.clearDB(4);
                 databaseHandlerAppSave.clearDB(2);
                 databaseHandlerAppSave.clearDB(1);

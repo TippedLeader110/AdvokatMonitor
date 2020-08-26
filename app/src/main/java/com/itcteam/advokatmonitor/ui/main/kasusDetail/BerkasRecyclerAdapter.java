@@ -84,7 +84,23 @@ public class BerkasRecyclerAdapter extends RecyclerView.Adapter<BerkasRecyclerAd
         holder.hapus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.hapusBerkas(value.get("id"));
+                AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+                alertDialog.setMessage("Apakah anda yakin ingin menghapus dokumen pendukung ini ?");
+                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Tidak",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        });
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Ya",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                listener.hapusBerkas(value.get("id"));
+                            }
+                        });
+                alertDialog.show();
+
             }
         });
     }

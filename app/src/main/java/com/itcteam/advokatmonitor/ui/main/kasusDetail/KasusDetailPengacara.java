@@ -4,7 +4,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,6 +13,22 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
+import android.view.View;
+import android.webkit.MimeTypeMap;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.FrameLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -24,34 +39,20 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.os.Environment;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.FrameLayout;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.itcteam.advokatmonitor.R;
 import com.itcteam.advokatmonitor.dbclass.DatabaseHandlerAppSave;
 import com.itcteam.advokatmonitor.simpletask.TampilAlertDialog;
 import com.itcteam.advokatmonitor.ui.main.Login;
 import com.itcteam.advokatmonitor.ui.main.kasus.Kasus;
+import com.nbsp.materialfilepicker.MaterialFilePicker;
+import com.nbsp.materialfilepicker.ui.FilePickerActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -59,9 +60,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class KasusDetailPengacara extends AppCompatActivity implements DialogEditKasus.EditDialogListener, BerkasRecyclerAdapter.ListenerRecyclerBerkas{
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 
-    private static final int PERMISSION_STORAGE_CODE = 1000;
+public class KasusDetailPengacara extends AppCompatActivity implements DialogEditKasus.EditDialogListener
+        , BerkasRecyclerAdapter.ListenerRecyclerBerkas, DialogInfoBerkas.EditDialogListener{
+
+    private static final int PERMISSION_STORAGE_CODE_READ = 1000;
+    private static final int PERMISSION_STORAGE_CODE_WRITE = 1001;
+    private static final int PERMISSION_STORAGE_CODE = 1002;
     DatabaseHandlerAppSave appsave;
     ProgressDialog pd;
     TextView judul_detail, pengirim_detail, status_text_detail, ktp_detail, nama_pengacara, tgl_lhr, tmpt_lhr, pekerjaan, tgl_lhrdo, tmpt_lhrdo, pekerjaando, waktu;
@@ -72,10 +81,14 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
     Context context;
     Boolean back;
     TampilAlertDialog talert;
+    FrameLayout frameLayout;
     Integer idKasus, posisiFragment;
     DatePickerDialog.OnDateSetListener dateSetListener;
     private String namaberkas, url;
     private String filePath;
+    private boolean sendDone;
+    private String namafileUpload;
+
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -85,7 +98,9 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
         setContentView(R.layout.activity_kasus_detail_pengacara);
         context = this;
         back = false;
+        checkFilePermission();
         pd = new ProgressDialog(this);
+        frameLayout = findViewById(R.id.overlay);
         judul_detail = this.findViewById(R.id.judul_detail_pengacara);
         status_text_detail = this.findViewById(R.id.status_text_detail_pengacara);
         ktp_detail = this.findViewById(R.id.ktp_detail_pengacara);
@@ -163,9 +178,8 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent file = new Intent(Intent.ACTION_GET_CONTENT);
-                file.setType("*/*");
-                startActivityForResult(file, 10);
+                DialogInfoBerkas dialogInfoBerkas = new DialogInfoBerkas();
+                dialogInfoBerkas.show(getSupportFragmentManager(), "Upload berkas baru");
             }
         });
 //      Klik tombol pengacara
@@ -310,10 +324,10 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
         });
 
         fetchBerkas();
-
     }
 
     private void fetchBerkas() {
+        frameLayout.setVisibility(frameLayout.VISIBLE);
         final List daftarBerkas = new ArrayList();
         RequestQueue queue = Volley.newRequestQueue(KasusDetailPengacara.this);
         String url = getString(R.string.base_url)+"getBerkas";
@@ -327,7 +341,6 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
                             JSONObject jb = new JSONObject(response);
                             if (jb.getString("error")=="false"){
                                 JSONArray ja = new JSONArray(jb.getString("berkas"));
-                                FrameLayout frameLayout = findViewById(R.id.overlay);
                                 frameLayout.setVisibility(frameLayout.GONE);
 
                                 if (ja.length()!=0){
@@ -682,7 +695,8 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
                                     alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                                             new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog, int which) {
-                                                    afterChangeData();
+//                                                    afterChangeData();
+                                                    fetchBerkas();
                                                 }
                                             });
                                     alertDialog.show();
@@ -802,13 +816,43 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
         }
     }
 
+    public void checkFilePermission(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if (context.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+                    PackageManager.PERMISSION_DENIED){
+                String[] permission = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                requestPermissions(permission, PERMISSION_STORAGE_CODE_WRITE);
+            }
+            if (context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) ==
+                    PackageManager.PERMISSION_DENIED){
+                String[] permission = {Manifest.permission.READ_EXTERNAL_STORAGE};
+                requestPermissions(permission, PERMISSION_STORAGE_CODE_WRITE);
+            }
+        }else{
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode){
+            case PERMISSION_STORAGE_CODE_WRITE: {
+                if (grantResults.length > 0 && grantResults[0] ==
+                        PackageManager.PERMISSION_GRANTED) {
+                }else{
+                    Toast.makeText(context, "Akses Penyimpanan External Ditolak", Toast.LENGTH_SHORT).show();
+                }
+            }
+            case PERMISSION_STORAGE_CODE_READ: {
+                if (grantResults.length > 0 && grantResults[0] ==
+                        PackageManager.PERMISSION_GRANTED) {
+                }else{
+                    Toast.makeText(context, "Akses Penyimpanan External Ditolak", Toast.LENGTH_SHORT).show();
+                }
+            }
             case PERMISSION_STORAGE_CODE: {
                 if (grantResults.length > 0 && grantResults[0] ==
                         PackageManager.PERMISSION_GRANTED) {
-                    doDownload(url, namaberkas);
+                    downloadFile(url, filePath);
                 }else{
                     Toast.makeText(context, "Akses Penyimpanan External Ditolak", Toast.LENGTH_SHORT).show();
                 }
@@ -817,31 +861,119 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
         }
     }
 
+    public String getRealPath(Uri uri){
+        Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+        if (cursor==null){
+            return uri.getPath();
+        }else{
+            cursor.moveToFirst();
+            int id = cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID);
+            return cursor.getString(id);
+        }
+    }
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable final Intent data) {
         switch (requestCode) {
             case 10: {
                 if (resultCode == RESULT_OK) {
-                    String path = data.getData().getPath();
-                    String filePath = null;
-                    Uri _uri = data.getData();
-                    Log.w("URI","URI = "+ _uri);
-                    Log.w("URI","URI = "+ path);
-                    if (_uri != null) {
-                        Cursor cursor = this.getContentResolver().query(_uri, new String[] { android.provider.MediaStore.Images.ImageColumns.DATA }, null, null, null);
-                        cursor.moveToFirst();
-                        filePath = cursor.getString(0);
-                        cursor.close();
-                    } else {
-                        filePath = _uri.getPath();
+                    sendDone = false;
+                    pd.setTitle("Mengirim file !!");
+                    pd.setMessage("Harap menunggu.....");
+                    pd.show();
+                    String filepath = data.getStringExtra(FilePickerActivity.RESULT_FILE_PATH);
+                    File file = new File(filepath);
+
+                    if (getMimeType(filepath)!=null){
+                        Thread t = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    String extFile = getMimeType(filepath);
+                                    Log.w("MIME : ", getMimeType(filepath));
+
+                                    OkHttpClient client = new OkHttpClient();
+                                    RequestBody file_body = RequestBody.create(MediaType.parse(extFile),file);
+                                    RequestBody requestBody = new MultipartBody.Builder()
+                                            .setType(MultipartBody.FORM)
+                                            .addFormDataPart("id", Integer.toString(idKasus))
+                                            .addFormDataPart("type", extFile)
+                                            .addFormDataPart("nama_file", namafileUpload)
+                                            .addFormDataPart("token", appsave.getToken())
+                                            .addFormDataPart("file", filepath.substring
+                                                    (filepath.lastIndexOf("/")+1), file_body)
+                                            .build();
+
+                                    String urlPHP = getString(R.string.base_url)+"upload";
+                                    okhttp3.Request request = new okhttp3.Request.Builder()
+                                            .url(urlPHP)
+                                            .post(requestBody)
+                                            .build();
+
+                                    try {
+                                        okhttp3.Response response = client.newCall(request).execute();
+                                        pd.dismiss();
+                                        sendDone = true;
+                                        if (!response.isSuccessful()) {
+                                            throw new IOException("Unexpected code " + response);
+                                        }
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+                                                alertDialog.setTitle("Berhasil");
+                                                alertDialog.setMessage("Upload file berhasil !!!");
+                                                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                                        new DialogInterface.OnClickListener() {
+                                                            public void onClick(DialogInterface dialog, int which) {
+//                                                                afterChangeData();
+                                                                fetchBerkas();
+                                                            }
+                                                        });
+                                                alertDialog.show();
+                                            }
+                                        });
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                } finally {
+
+                                }
+                            }
+                        });
+
+                        t.start();
+
+                    }else{
+                        if (pd.isShowing()){
+                            pd.dismiss();
+                            talert.tampilDialogDefault("Kesalahan", "Format file atau judul tidak didukung. Harap gunakan File Document / File Gambar dan nama file yang pendek");
+                        }
                     }
-                    Log.w("","Chosen path = "+ filePath);
-                    this.filePath = filePath;
-//                    Log.w("PATH : ", filePath);
                 }
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public static String getMimeType(String urlD) {
+        String type = null;
+        String url = urlD.substring(urlD.lastIndexOf("."));
+        Log.w("Substring : ", url);
+        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+        if (extension != null) {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        }
+        return type;
+    }
+
+    @Override
+    public void terimaDataDialogBerkas(String namafile) {
+        this.namafileUpload = namafile;
+        new MaterialFilePicker()
+                .withActivity(KasusDetailPengacara.this)
+                .withRequestCode(10)
+                .start();
     }
 
     private void doDownload(String urlFile, String namaberkas) {
