@@ -1,12 +1,17 @@
 package com.itcteam.advokatmonitor.ui.main.kasusDetail;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import com.android.volley.AuthFailureError;
@@ -19,9 +24,13 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -29,6 +38,7 @@ import android.widget.DatePicker;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.itcteam.advokatmonitor.R;
 import com.itcteam.advokatmonitor.dbclass.DatabaseHandlerAppSave;
@@ -47,20 +57,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class KasusDetailPengacara extends AppCompatActivity implements DialogEditKasus.EditDialogListener{
+public class KasusDetailPengacara extends AppCompatActivity implements DialogEditKasus.EditDialogListener, BerkasRecyclerAdapter.ListenerRecyclerBerkas{
 
+    private static final int PERMISSION_STORAGE_CODE = 1000;
     DatabaseHandlerAppSave appsave;
     ProgressDialog pd;
     TextView judul_detail, pengirim_detail, status_text_detail, ktp_detail, nama_pengacara, tgl_lhr, tmpt_lhr, pekerjaan, tgl_lhrdo, tmpt_lhrdo, pekerjaando, waktu;
     Button kalender, status_button, edit, add, sukses;
     FloatingActionButton fab;
-    ListView berkasList;
+    RecyclerView berkasList;
     String judul, pengirim, ktp, status, tmpt, tgl, pekerjaanString, waktuString;
     Context context;
     Boolean back;
     TampilAlertDialog talert;
     Integer idKasus, posisiFragment;
     DatePickerDialog.OnDateSetListener dateSetListener;
+    private String namaberkas, url;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -316,8 +328,10 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
                                         berkasObj.put("urlberkas", getData.getString("file"));
                                         daftarBerkas.add(berkasObj);
                                     }
-                                    BerkasAdapter adapter = new BerkasAdapter(context, daftarBerkas, R.layout.listview_daftarberkas,new String[]{"id","namaberkas", "urlberkas"}, new int[]{R.id.id_berkas, R.id.namaberkas, R.id.urlberkas});
+//                                    BerkasAdapter adapter = new BerkasAdapter(context, daftarBerkas, R.layout.listview_daftarberkas,new String[]{"id","namaberkas", "urlberkas"}, new int[]{R.id.id_berkas, R.id.namaberkas, R.id.urlberkas});
+                                    BerkasRecyclerAdapter adapter = new BerkasRecyclerAdapter(context, daftarBerkas);
                                     berkasList.setAdapter(adapter);
+                                    berkasList.setLayoutManager(new LinearLayoutManager(context));
                                 }
 
                             }else if(jb.getString("error")=="fail"){
@@ -635,6 +649,66 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
     }
 
     @Override
+    public void hapusBerkas(String id) {
+        final String idBerkas = id;
+        pd.setCancelable(false);
+        pd.setTitle("Mohon Tunggu !!!");
+        pd.setMessage("Menghapus berkas");
+        pd.show();
+        RequestQueue queue = Volley.newRequestQueue(context);
+        String url = getString(R.string.base_url)+"hapusBerkas";
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        if (pd.isShowing()){
+                            try {
+                                JSONObject jb = new JSONObject(response);
+                                if (jb.getString("error")=="false"){
+                                    AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+                                    alertDialog.setTitle("Berhasil");
+                                    alertDialog.setMessage("Berkas berhasil dihapus !!!");
+                                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    afterChangeData();
+                                                }
+                                            });
+                                    alertDialog.show();
+                                }else if(jb.getString("error")=="fail"){
+                                    talert.tampilDialogDefault("Kesalahan", "Terjadi kesalahan");
+                                }
+                                else{
+                                    talert.tampilDialogDefault("Kesalahan", "sesi telah habis, silahkan login kembali");
+//                                    Intent intent = new Intent(context, Login.class);
+//                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                                    finish();
+//                                    startActivity(intent);
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("id", idBerkas);
+                params.put("token",appsave.getToken());
+                return params;
+            }
+        };
+        queue.add(stringRequest);
+    }
+
+    @Override
     public void terimaDataDialog(final String tanggalString, final String tempatString, final String pekerjaanString) {
 //        Log.w("DDD", tanggalString + "+" + tempatString + "+" + pekerjaanString);
         pd.setCancelable(false);
@@ -697,5 +771,52 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
             }
         };
         queue.add(stringRequest);
+    }
+
+
+
+    public void downloadFile(String url, String namaberkas) {
+        this.url = url;
+        this.namaberkas = namaberkas;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if (context.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+                    PackageManager.PERMISSION_DENIED){
+                String[] permission = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                requestPermissions(permission, PERMISSION_STORAGE_CODE);
+            }else{
+                doDownload(url, namaberkas);
+            }
+        }else{
+            doDownload(url, namaberkas);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case PERMISSION_STORAGE_CODE: {
+                if (grantResults.length > 0 && grantResults[0] ==
+                        PackageManager.PERMISSION_GRANTED) {
+                    doDownload(url, namaberkas);
+                }else{
+                    Toast.makeText(context, "Akses Penyimpanan External Ditolak", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+        }
+    }
+
+    private void doDownload(String urlFile, String namaberkas) {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlFile));
+        startActivity(browserIntent);
+//        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(urlFile));
+//        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
+//        request.setTitle("Download");
+//        request.setDescription("Downloading : " + namaberkas);
+//        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+//        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "filefile.jpg");
+//        DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+//        manager.enqueue(request);
+//        Toast.makeText(context, "Downloading : " + namaberkas, Toast.LENGTH_SHORT).show();
     }
 }
