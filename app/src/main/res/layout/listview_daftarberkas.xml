@@ -17,7 +17,7 @@
             android:id="@+id/file_thumb"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            tools:srcCompat="@drawable/ic_baseline_insert_drive_file_24" />
+            tools:srcCompat="@drawable/ic_baseline_insert_drive_file_gray" />
 
         <LinearLayout
             android:layout_width="wrap_content"

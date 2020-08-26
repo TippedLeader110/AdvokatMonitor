@@ -69,7 +69,17 @@ public class BerkasRecyclerAdapter extends RecyclerView.Adapter<BerkasRecyclerAd
         holder.namaberkas.setText(value.get("namaberkas"));
         holder.idfile.setText(value.get("id"));
         holder.urlfile.setText(value.get("urlberkas"));
-        holder.thumb.setImageResource(R.drawable.ic_baseline_insert_drive_file_24);
+        holder.thumb.setImageResource(R.drawable.ic_baseline_insert_drive_file_gray);
+
+        holder.thumb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String url = context.getString(R.string.base_url_public);
+                url = url + "kasus/berkas/" + value.get("urlberkas");
+                Log.w("URL NAMA : ", url+"  "+value.get("namaberkas"));
+                listener.downloadFile(url, value.get("urlberkas"));
+            }
+        });
 
         holder.download.setOnClickListener(new View.OnClickListener() {
             @Override
