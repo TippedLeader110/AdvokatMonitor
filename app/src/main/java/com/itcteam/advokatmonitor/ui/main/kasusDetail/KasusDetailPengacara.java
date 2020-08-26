@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -73,6 +75,7 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
     Integer idKasus, posisiFragment;
     DatePickerDialog.OnDateSetListener dateSetListener;
     private String namaberkas, url;
+    private String filePath;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -157,6 +160,14 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
             }
         });
 
+        add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent file = new Intent(Intent.ACTION_GET_CONTENT);
+                file.setType("*/*");
+                startActivityForResult(file, 10);
+            }
+        });
 //      Klik tombol pengacara
         kalender = this.findViewById(R.id.date_detail_pengacara);
         kalender.setOnClickListener(new View.OnClickListener() {
@@ -804,6 +815,33 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
             }
 
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        switch (requestCode) {
+            case 10: {
+                if (resultCode == RESULT_OK) {
+                    String path = data.getData().getPath();
+                    String filePath = null;
+                    Uri _uri = data.getData();
+                    Log.w("URI","URI = "+ _uri);
+                    Log.w("URI","URI = "+ path);
+                    if (_uri != null) {
+                        Cursor cursor = this.getContentResolver().query(_uri, new String[] { android.provider.MediaStore.Images.ImageColumns.DATA }, null, null, null);
+                        cursor.moveToFirst();
+                        filePath = cursor.getString(0);
+                        cursor.close();
+                    } else {
+                        filePath = _uri.getPath();
+                    }
+                    Log.w("","Chosen path = "+ filePath);
+                    this.filePath = filePath;
+//                    Log.w("PATH : ", filePath);
+                }
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void doDownload(String urlFile, String namaberkas) {

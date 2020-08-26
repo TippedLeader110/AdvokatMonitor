@@ -86,7 +86,7 @@
                     android:layout_marginRight="15dp"
                     android:layout_weight="1"
                     android:background="@android:color/transparent"
-                    android:drawableTop="@drawable/ic_baseline_check_24"
+                    android:drawableTop="@drawable/ic_baseline_done_all_24"
                     android:text="Kasus Selesai"
                     android:visibility="gone"
                     />
