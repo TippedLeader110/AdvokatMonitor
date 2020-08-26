@@ -24,18 +24,15 @@
     <autoscroll-from-editor value="true" />
     <show-object-properties value="true" />
     <loaded-nodes>
-      <connection connection-id="65ff6ad5-3c4f-46c7-a177-c4395983d408">
-        <schema name="main" object-types="view, table" />
-      </connection>
       <connection connection-id="35db5c88-9da6-4fc9-9878-20086e56c55e">
-        <schema name="main" object-types="view, table" />
+        <schema name="main" object-types="table, view" />
       </connection>
     </loaded-nodes>
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="65ff6ad5-3c4f-46c7-a177-c4395983d408">
-      <console name="SQLite" type="STANDARD" schema="main" session="Main"><![CDATA[select * from
- login]]></console>
+      <console name="SQLite" type="STANDARD" schema="main" session="Main">select * from
+ login</console>
     </connection>
     <connection id="e771eda8-44fb-42a8-b07f-ba8b903a277f">
       <console name="MariaDB" type="STANDARD" schema="" session="Main" />

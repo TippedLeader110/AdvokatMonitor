@@ -32,6 +32,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,13 +44,17 @@ import com.itcteam.advokatmonitor.simpletask.TampilAlertDialog;
 import com.itcteam.advokatmonitor.ui.main.Login;
 import com.itcteam.advokatmonitor.ui.main.kasus.Kasus;
 import com.itcteam.advokatmonitor.ui.main.kasus.kasus_fragment.SectionsPagerAdapter;
+import com.itcteam.advokatmonitor.ui.main.pengacara.AdapterPengacara;
 import com.itcteam.advokatmonitor.ui.main.pengacara.KasusListPengacara;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -59,6 +65,7 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
     TextView judul_detail, pengirim_detail, status_text_detail, ktp_detail, nama_pengacara, tgl_lhr, tmpt_lhr, pekerjaan, tgl_lhrdo, tmpt_lhrdo, pekerjaando, waktu;
     Button kalender, status_button, edit, add, sukses;
     FloatingActionButton fab;
+    ListView berkasList;
     String judul, pengirim, ktp, status, tmpt, tgl, pekerjaanString, waktuString;
     Context context;
     Boolean back;
@@ -82,6 +89,7 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
         tmpt_lhr = this.findViewById(R.id.tmptlahir_detail_pengacara);
         tgl_lhr = this.findViewById(R.id.tgllahir_detail_pengacara);
         pekerjaan = this.findViewById(R.id.pekerjaan_detail_pengacara);
+        berkasList = this.findViewById(R.id.listview_berkas);
         sukses = this.findViewById(R.id.sukses_kasus);
         waktu = this.findViewById(R.id.waktu_detail_pengacara);
         nama_pengacara = this.findViewById(R.id.nama_pengacara_detail_pengacara);
@@ -288,6 +296,73 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
                 }
             }
         });
+
+        fetchBerkas();
+
+    }
+
+    private void fetchBerkas() {
+        final List daftarBerkas = new ArrayList();
+        RequestQueue queue = Volley.newRequestQueue(KasusDetailPengacara.this);
+        String url = getString(R.string.base_url)+"getBerkas";
+        StringRequest objR = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        if (pd.isShowing())
+                            pd.dismiss();
+                        try {
+                            JSONObject jb = new JSONObject(response);
+                            if (jb.getString("error")=="false"){
+                                JSONArray ja = new JSONArray(jb.getString("berkas"));
+                                FrameLayout frameLayout = findViewById(R.id.overlay);
+                                frameLayout.setVisibility(frameLayout.GONE);
+
+                                if (ja.length()!=0){
+                                    for (int i = 0; i < ja.length(); i++){
+                                        HashMap<String,Object> berkasObj = new HashMap<>();
+                                        JSONObject getData = ja.getJSONObject(i);
+                                        berkasObj.put("id", getData.getString("id_berkas"));
+                                        berkasObj.put("namaberkas", getData.getString("nama_berkas"));
+                                        berkasObj.put("urlberkas", getData.getString("file"));
+                                        daftarBerkas.add(berkasObj);
+                                    }
+                                    BerkasAdapter adapter = new BerkasAdapter(context, daftarBerkas, R.layout.listview_daftarberkas,new String[]{"id","namaberkas", "urlberkas"}, new int[]{R.id.id_berkas, R.id.namaberkas, R.id.urlberkas});
+                                    berkasList.setAdapter(adapter);
+                                }
+
+                            }else if(jb.getString("error")=="fail"){
+                                talert.tampilDialogDefault("Kesalahan", "Terjadi kesalahan");
+
+                            }
+                            else{
+                                talert.tampilDialogDefault("Kesalahan", "sesi telah habis, silahkan login kembali");
+                                Intent intent = new Intent(context, Login.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                finish();
+                                startActivity(intent);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                }
+        ){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("id",Integer.toString(idKasus));
+                params.put("token",appsave.getToken());
+                return params;
+            }
+        };
+        queue.add(objR);
     }
 
     private void  kasusSelesai(){

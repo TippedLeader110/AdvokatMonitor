@@ -126,6 +126,7 @@ public class Kasus extends AppCompatActivity implements PopupMenu.OnMenuItemClic
             case R.id.item1:
                 Toast.makeText(this, "Logout !!!", Toast.LENGTH_SHORT).show();
                 databaseHandlerAppSave.clearDB(3);
+                databaseHandlerAppSave.clearDB(4);
                 databaseHandlerAppSave.clearDB(2);
                 databaseHandlerAppSave.clearDB(1);
                 Intent intent = new Intent(this, Login.class);

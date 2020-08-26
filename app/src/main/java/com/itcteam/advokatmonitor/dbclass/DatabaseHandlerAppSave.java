@@ -21,6 +21,7 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
     private static final String TABLE_SETTINGS = "login";
     private static final String TABLE_KASUS = "kasus";
     private static final String TABLE_PENGACARA = "pengacara";
+    private static final String TABLE_BERKAS = "berkas";
     private static final String KEY_AUTO = "autologin";
     private static final String KEY_USERNAME = "username";
     private static final String KEY_PASSWORD = "password";
@@ -82,6 +83,15 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
                 ") ";
         Log.w("BENTUK QUERY",CREATE_PENGACARA);
         db.execSQL(CREATE_PENGACARA);
+
+        String CREATE_BERKAS = " CREATE TABLE " + TABLE_BERKAS + " ( " +
+                "  id_berkas int(11) NOT NULL," +
+                "  id_masalah int(11) NOT NULL," +
+                "  nama_berkas text ," +
+                "  file text" +
+                ") ";
+        Log.w("BENTUK QUERY",CREATE_BERKAS);
+        db.execSQL(CREATE_BERKAS);
     }
 
     @Override
@@ -354,7 +364,10 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
             table = TABLE_KASUS;
         }else if(dbtable==2){
             table = TABLE_PENGACARA;
-        }else{
+        }else if (dbtable==3){
+            table = TABLE_BERKAS;
+        }
+        else{
             table = TABLE_SETTINGS;
         }
         db.execSQL("DELETE FROM " + table);
