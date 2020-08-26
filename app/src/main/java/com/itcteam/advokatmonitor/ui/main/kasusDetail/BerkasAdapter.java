@@ -1,4 +1,4 @@
-package com.itcteam.advokatmonitor.kasusDetail;
+package com.itcteam.advokatmonitor.ui.main.kasusDetail;
 
 import android.content.Context;
 import android.graphics.Bitmap;

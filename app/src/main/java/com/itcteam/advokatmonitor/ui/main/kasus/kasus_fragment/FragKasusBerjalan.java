@@ -21,10 +21,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.itcteam.advokatmonitor.kasusDetail.KasusDetailAdmin;
+import com.itcteam.advokatmonitor.ui.main.kasusDetail.KasusDetailAdmin;
 import com.itcteam.advokatmonitor.dbclass.DatabaseHandlerAppSave;
 import com.itcteam.advokatmonitor.R;
-import com.itcteam.advokatmonitor.kasusDetail.KasusDetailPengacara;
+import com.itcteam.advokatmonitor.ui.main.kasusDetail.KasusDetailPengacara;
 
 import java.util.ArrayList;
 import java.util.HashMap;

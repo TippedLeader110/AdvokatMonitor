@@ -12,14 +12,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".kasusDetail.KasusDetailPengacara"
+            android:name=".ui.main.kasusDetail.KasusDetailPengacara"
             android:label="@string/title_activity_kasus_detail_pengacara"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".ui.main.pengacara.KasusListPengacara"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".kasusDetail.KasusDetailAdmin"
+            android:name=".ui.main.kasusDetail.KasusDetailAdmin"
             android:label="@string/title_activity_kasus_detail"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity

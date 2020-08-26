@@ -1,4 +1,4 @@
-package com.itcteam.advokatmonitor.kasusDetail;
+package com.itcteam.advokatmonitor.ui.main.kasusDetail;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -7,8 +7,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import com.android.volley.AuthFailureError;
@@ -20,32 +18,23 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.viewpager.widget.ViewPager;
 
-import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.material.tabs.TabLayout;
 import com.itcteam.advokatmonitor.R;
 import com.itcteam.advokatmonitor.dbclass.DatabaseHandlerAppSave;
 import com.itcteam.advokatmonitor.simpletask.TampilAlertDialog;
 import com.itcteam.advokatmonitor.ui.main.Login;
 import com.itcteam.advokatmonitor.ui.main.kasus.Kasus;
-import com.itcteam.advokatmonitor.ui.main.kasus.kasus_fragment.SectionsPagerAdapter;
-import com.itcteam.advokatmonitor.ui.main.pengacara.AdapterPengacara;
-import com.itcteam.advokatmonitor.ui.main.pengacara.KasusListPengacara;
 
 import org.json.JSONArray;
 import org.json.JSONException;

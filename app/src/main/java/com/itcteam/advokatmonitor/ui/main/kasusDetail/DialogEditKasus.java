@@ -1,4 +1,4 @@
-package com.itcteam.advokatmonitor.kasusDetail;
+package com.itcteam.advokatmonitor.ui.main.kasusDetail;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;

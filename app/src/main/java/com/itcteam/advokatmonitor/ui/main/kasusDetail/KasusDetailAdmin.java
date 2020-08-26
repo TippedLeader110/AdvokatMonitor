@@ -1,4 +1,4 @@
-package com.itcteam.advokatmonitor.kasusDetail;
+package com.itcteam.advokatmonitor.ui.main.kasusDetail;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -30,7 +30,6 @@ import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewStub;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
