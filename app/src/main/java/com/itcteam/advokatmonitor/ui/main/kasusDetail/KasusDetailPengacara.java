@@ -71,10 +71,11 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
     private static final int PERMISSION_STORAGE_CODE_READ = 1000;
     private static final int PERMISSION_STORAGE_CODE_WRITE = 1001;
     private static final int PERMISSION_STORAGE_CODE = 1002;
+    private static final int CALL_CODE_PERMISSION = 1004;
     DatabaseHandlerAppSave appsave;
     ProgressDialog pd;
     TextView judul_detail, pengirim_detail, status_text_detail, ktp_detail, nama_pengacara, tgl_lhr, tmpt_lhr, pekerjaan, tgl_lhrdo, tmpt_lhrdo, pekerjaando, waktu, nohp, email;
-    Button kalender, status_button, edit, add, sukses;
+    Button kalender, status_button, edit, add, sukses, emailmanual, call;
     FloatingActionButton fab;
     RecyclerView berkasList;
     String judul, pengirim, ktp, status, tmpt, tgl, pekerjaanString, waktuString;
@@ -88,6 +89,9 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
     private String filePath;
     private boolean sendDone;
     private String namafileUpload;
+    private String nohpString;
+    private String emailString;
+
 
 
     @SuppressLint("SetTextI18n")
@@ -107,10 +111,14 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
         pengirim_detail = this.findViewById(R.id.namapengirim_detail_pengacara);
         tmpt_lhr = this.findViewById(R.id.tmptlahir_detail_pengacara);
         tgl_lhr = this.findViewById(R.id.tgllahir_detail_pengacara);
+        emailmanual = this.findViewById(R.id.emailmanual_detail_pengacara);
+        call = this.findViewById(R.id.call_detail_pengacara);
         pekerjaan = this.findViewById(R.id.pekerjaan_detail_pengacara);
         berkasList = this.findViewById(R.id.listview_berkas);
         sukses = this.findViewById(R.id.sukses_kasus);
         waktu = this.findViewById(R.id.waktu_detail_pengacara);
+        nohp = this.findViewById(R.id.nohp_detail_pengacara);
+        email = this.findViewById(R.id.email_detail_pengacara);
         nama_pengacara = this.findViewById(R.id.nama_pengacara_detail_pengacara);
         edit = this.findViewById(R.id.edit_detail_pengacara);
         add = this.findViewById(R.id.tambahdokumen_detail_pengacara);
@@ -173,6 +181,27 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
                 }
                 alertDialog.show();
 
+            }
+        });
+
+        call.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkCallPermission();
+            }
+        });
+
+        emailmanual.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType("message/rfc822");
+                i.putExtra(Intent.EXTRA_EMAIL  , new String[]{emailString});
+                try {
+                    startActivity(Intent.createChooser(i, "Kirim email dengan aplikasi"));
+                } catch (android.content.ActivityNotFoundException ex) {
+                    Toast.makeText(KasusDetailPengacara.this, "Aplikasi email tidak terinstall di perangkat anda !!.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -697,6 +726,10 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
         nama_pengacara.setText(appsave.namaPengacara(hash.get("id_p")));
         pengirim_detail.setText(pengirim);
         ktp_detail.setText(ktp);
+        nohpString = hash.get("nohp");
+        nohp.setText(hash.get("nohp"));
+        emailString = hash.get("email");
+        email.setText(hash.get("email"));
         status_text_detail.setText(status);
         if (!pekerjaanString.equals("null")){
             pekerjaan.setText(pekerjaanString);
@@ -879,6 +912,16 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
         }
     }
 
+    public void checkCallPermission(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if (context.checkSelfPermission(Manifest.permission.CALL_PHONE) ==
+                    PackageManager.PERMISSION_DENIED){
+                String[] permission = {Manifest.permission.CALL_PHONE};
+                requestPermissions(permission, CALL_CODE_PERMISSION);
+            }
+        }
+    }
+
     public void checkFilePermission(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             if (context.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
@@ -891,7 +934,6 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
                 String[] permission = {Manifest.permission.READ_EXTERNAL_STORAGE};
                 requestPermissions(permission, PERMISSION_STORAGE_CODE_WRITE);
             }
-        }else{
         }
     }
 
@@ -920,8 +962,21 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
                     Toast.makeText(context, "Akses Penyimpanan External Ditolak", Toast.LENGTH_SHORT).show();
                 }
             }
+            case CALL_CODE_PERMISSION: {
+                if (grantResults.length > 0 && grantResults[0] ==
+                        PackageManager.PERMISSION_GRANTED) {
+                    createCallIntent();
+                }else{
+                    Toast.makeText(context, "Akses Telepon Ditolak", Toast.LENGTH_SHORT).show();
+                }
+            }
 
         }
+    }
+
+    private void createCallIntent() {
+        Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + nohpString));
+        startActivity(intent);
     }
 
     public String getRealPath(Uri uri){
