@@ -147,7 +147,7 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
                         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Ya",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
-//                                sendMail();
+                                    sendMail();
                                     }
                                 });
                     }else{
@@ -324,6 +324,68 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
         });
 
         fetchBerkas();
+    }
+
+    private void sendMail() {
+        pd.setTitle("Mohon Tunggu !!!");
+        pd.setMessage("Sedang memproses");
+        pd.show();
+        if (pd.isShowing()){
+            RequestQueue queue = Volley.newRequestQueue(KasusDetailPengacara.this);
+            String url = getString(R.string.base_url)+"emailSend";
+            StringRequest objR = new StringRequest(Request.Method.POST, url,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            if (pd.isShowing())
+                                pd.dismiss();
+                            try {
+                                JSONObject jb = new JSONObject(response);
+                                if (jb.getString("error")=="false"){
+                                    back = true;
+                                    AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+                                    alertDialog.setTitle("Berhasil");
+                                    alertDialog.setMessage("Email berhasil dikirim");
+                                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+//                                                            afterChangeData();
+                                                    dialog.dismiss();
+                                                }
+                                            });
+                                    alertDialog.show();
+                                }else if(jb.getString("error")=="fail"){
+                                    talert.tampilDialogDefault("Kesalahan", "sesi telah habis, silahkan login kembali");
+                                    Intent intent = new Intent(context, Login.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    finish();
+                                    startActivity(intent);
+                                }
+                                else{
+                                    talert.tampilDialogDefault("Kesalahan", "Terjadi kesalahan");
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            error.printStackTrace();
+                        }
+                    }
+            ){
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("id",Integer.toString(idKasus));
+                    params.put("token",appsave.getToken());
+                    return params;
+                }
+            };
+            queue.add(objR);
+        }
     }
 
     private void fetchBerkas() {

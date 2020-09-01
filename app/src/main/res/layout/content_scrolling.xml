@@ -20,6 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/text_margin"
             android:textSize="25dp"
+            android:textColor="@android:color/black"
             android:text="TITLE"
             android:textStyle="bold" />
 
@@ -59,6 +60,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/text_margin"
                 android:textSize="20dp"
+                android:textColor="@android:color/holo_blue_dark"
                 android:text="Info Detail"
                 android:textStyle="bold" />
 
@@ -72,6 +74,7 @@
 
                     <TextView
                         android:id="@+id/textView2"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -82,12 +85,14 @@
                         android:id="@+id/textView6"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp"
                         android:text=" :" />
 
                     <TextView
                         android:id="@+id/status_text_detail"
                         android:layout_width="wrap_content"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="7dp"
@@ -102,6 +107,7 @@
                     <TextView
                         android:id="@+id/textView4"
                         android:layout_width="wrap_content"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="16dp"
@@ -109,6 +115,7 @@
 
                     <TextView
                         android:id="@+id/textView8"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -119,6 +126,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="7dp"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp"
                         android:layout_marginBottom="5dp"
                         android:text="SENDER" />
@@ -131,6 +139,7 @@
 
                     <TextView
                         android:id="@+id/textView3"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -141,12 +150,14 @@
                         android:id="@+id/textView7"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp"
                         android:text=" :" />
 
                     <TextView
                         android:id="@+id/ktp_detail"
                         android:layout_width="wrap_content"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="7dp"
@@ -164,6 +175,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="16dp"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp"
                         android:text="Pengacara" />
 
@@ -171,6 +183,7 @@
                         android:id="@+id/textViewP2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp"
                         android:text=" :" />
 
@@ -180,6 +193,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="7dp"
                         android:layout_marginBottom="5dp"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp"
                         android:text="KTP" />
 

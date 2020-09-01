@@ -19,6 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/text_margin"
+            android:textColor="@android:color/black"
             android:textSize="25dp"
             android:text="TITLE"
             android:textStyle="bold" />
@@ -105,6 +106,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/text_margin"
                 android:textSize="20dp"
+                android:textColor="@android:color/holo_blue_dark"
                 android:text="Info detail"
                 android:textStyle="bold" />
 
@@ -122,6 +124,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="16dp"
                         android:text="Status Kasus"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp" />
 
                     <TextView
@@ -129,6 +132,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=" :"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp" />
 
                     <TextView
@@ -138,6 +142,7 @@
                         android:layout_marginLeft="7dp"
                         android:layout_marginBottom="5dp"
                         android:text="STATUS"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp" />
                 </TableRow>
 
@@ -151,6 +156,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="16dp"
                         android:text="Nama Client"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp" />
 
                     <TextView
@@ -158,6 +164,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=" :"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp" />
 
                     <TextView
@@ -167,6 +174,7 @@
                         android:layout_marginLeft="7dp"
                         android:layout_marginBottom="5dp"
                         android:text="SENDER"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp" />
 
                 </TableRow>
@@ -181,6 +189,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="16dp"
                         android:text="KTP Client"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp" />
 
                     <TextView
@@ -188,6 +197,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=" :"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp" />
 
                     <TextView
@@ -197,6 +207,7 @@
                         android:layout_marginLeft="7dp"
                         android:layout_marginBottom="5dp"
                         android:text="KTP"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp" />
 
                 </TableRow>
@@ -211,6 +222,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="16dp"
                         android:text="Pengacara"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp" />
 
                     <TextView
@@ -218,6 +230,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=" :"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp" />
 
                     <TextView
@@ -227,6 +240,7 @@
                         android:layout_marginLeft="7dp"
                         android:layout_marginBottom="5dp"
                         android:text="KTP"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp" />
 
                 </TableRow>
@@ -240,12 +254,14 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="16dp"
                         android:text="Waktu Jumpa"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=" :"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp" />
 
                     <TextView
@@ -255,6 +271,7 @@
                         android:layout_marginLeft="7dp"
                         android:layout_marginBottom="5dp"
                         android:text="Belum Ditentukan"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp" />
 
                 </TableRow>
@@ -269,6 +286,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="16dp"
                         android:text="Tempat Lahir"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp"
                         android:visibility="visible" />
 
@@ -276,6 +294,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=" :"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp"
                         android:visibility="visible" />
 
@@ -286,6 +305,7 @@
                         android:layout_marginLeft="7dp"
                         android:layout_marginBottom="5dp"
                         android:text="Belum Ditentukan"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp"
                         android:visibility="visible" />
 
@@ -301,6 +321,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="16dp"
                         android:text="Tanggal Lahir"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp"
                         android:visibility="visible" />
 
@@ -308,6 +329,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=" :"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp"
                         android:visibility="visible" />
 
@@ -318,6 +340,7 @@
                         android:layout_marginLeft="7dp"
                         android:layout_marginBottom="5dp"
                         android:text="Belum Ditentukan"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp"
                         android:visibility="visible" />
 
@@ -333,6 +356,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="16dp"
                         android:text="Pekerjaan"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp"
                         android:visibility="visible" />
 
@@ -340,6 +364,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=" :"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp"
                         android:visibility="visible" />
 
@@ -350,6 +375,7 @@
                         android:layout_marginLeft="7dp"
                         android:layout_marginBottom="5dp"
                         android:text="Belum Ditentukan"
+                        android:textColor="@android:color/black"
                         android:textSize="18dp"
                         android:visibility="visible" />
 
@@ -369,6 +395,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/text_margin"
+                android:textColor="@android:color/holo_blue_dark"
                 android:text="Dokumen Pendukung"
                 android:textSize="20dp"
                 android:textStyle="bold" />
