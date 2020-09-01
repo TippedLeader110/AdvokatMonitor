@@ -73,7 +73,7 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
     private static final int PERMISSION_STORAGE_CODE = 1002;
     DatabaseHandlerAppSave appsave;
     ProgressDialog pd;
-    TextView judul_detail, pengirim_detail, status_text_detail, ktp_detail, nama_pengacara, tgl_lhr, tmpt_lhr, pekerjaan, tgl_lhrdo, tmpt_lhrdo, pekerjaando, waktu;
+    TextView judul_detail, pengirim_detail, status_text_detail, ktp_detail, nama_pengacara, tgl_lhr, tmpt_lhr, pekerjaan, tgl_lhrdo, tmpt_lhrdo, pekerjaando, waktu, nohp, email;
     Button kalender, status_button, edit, add, sukses;
     FloatingActionButton fab;
     RecyclerView berkasList;
@@ -116,6 +116,7 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
         add = this.findViewById(R.id.tambahdokumen_detail_pengacara);
         appsave = new DatabaseHandlerAppSave(this);
         fab  = this.findViewById(R.id.fab);
+        status_button = this.findViewById(R.id.status_detail_pengacara);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -217,7 +218,7 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
             }
         };
 
-        status_button = this.findViewById(R.id.status_detail_pengacara);
+
 
         contentChangebyStatus();
 

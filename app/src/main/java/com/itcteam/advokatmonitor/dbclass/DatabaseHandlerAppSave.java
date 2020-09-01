@@ -309,6 +309,8 @@ public class DatabaseHandlerAppSave extends SQLiteOpenHelper {
             dataKasus.put("status", statusString);
             dataKasus.put("id",Integer.toString(cursor.getInt(cursor.getColumnIndex("id_masalah"))));
             dataKasus.put("judul",cursor.getString(cursor.getColumnIndex("deskripsi")));
+            dataKasus.put("nohp",cursor.getString(cursor.getColumnIndex("nohp")));
+            dataKasus.put("email",cursor.getString(cursor.getColumnIndex("email")));
             dataKasus.put("pengirim",cursor.getString(cursor.getColumnIndex("nama")));
             dataKasus.put("ktp",cursor.getString(cursor.getColumnIndex("ktp")));
             dataKasus.put("id_p",cursor.getString(cursor.getColumnIndex("id_p")));
