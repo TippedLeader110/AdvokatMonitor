@@ -918,7 +918,11 @@ public class KasusDetailPengacara extends AppCompatActivity implements DialogEdi
                     PackageManager.PERMISSION_DENIED){
                 String[] permission = {Manifest.permission.CALL_PHONE};
                 requestPermissions(permission, CALL_CODE_PERMISSION);
+            }else{
+                createCallIntent();
             }
+        }else{
+            createCallIntent();
         }
     }
 
